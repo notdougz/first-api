@@ -1,72 +1,45 @@
-# main.py
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional
+# Importando de nossos novos arquivos
+import crud
+import schemas
+from database import SessionLocal, lifespan  # Importando o lifespan que já tínhamos
 
-# 1. Modelo de Dados (Pydantic)
-class Tarefa(BaseModel):
-    id: int
-    titulo: str
-    descricao: Optional[str] = None
-    concluida: bool = False
+# --- Configuração da Aplicação FastAPI ---
+app = FastAPI(lifespan=lifespan)
 
-# Cria a aplicação FastAPI
-app = FastAPI()
+# --- Dependência para obter a Sessão do Banco de Dados ---
+# Esta função será chamada em cada endpoint que precisar acessar o banco.
+# O FastAPI gerencia a abertura e o fechamento da conexão.
+async def get_db():
+    async with SessionLocal() as db:
+        try:
+            yield db
+        finally:
+            await db.close()
 
-# 2. "Banco de Dados" em memória
-db: List[Tarefa] = []
-proximo_id = 1
-
-# 3. Endpoints da API
-
+# --- Endpoints da API ---
 @app.get("/")
 def read_root():
     return {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
 
-# Endpoint para CRIAR uma nova tarefa (Create)
-@app.post("/tarefas/", response_model=Tarefa)
-def criar_tarefa(tarefa: Tarefa):
-    global proximo_id
-    tarefa.id = proximo_id
-    db.append(tarefa)
-    proximo_id += 1
-    return tarefa
+# --- NOVO ENDPOINT DE CRIAÇÃO ---
+@app.post("/tarefas/", response_model=schemas.Tarefa, status_code=201)
+async def criar_nova_tarefa(
+    tarefa: schemas.TarefaCreate, db: AsyncSession = Depends(get_db)
+):
+    """
+    Cria uma nova tarefa no banco de dados.
+    """
+    return await crud.create_tarefa(db=db, tarefa=tarefa)
 
-# Endpoint para LER todas as tarefas (Read)
-@app.get("/tarefas/", response_model=List[Tarefa])
-def listar_tarefas():
-    return db
-
-# Endpoint para LER uma única tarefa por ID (Read)
-@app.get("/tarefas/{tarefa_id}", response_model=Tarefa)
-def obter_tarefa(tarefa_id: int):
-    for tarefa in db:
-        if tarefa.id == tarefa_id:
-            return tarefa
-    raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-
-# Endpoint para ATUALIZAR uma tarefa existente (Update)
-@app.put("/tarefas/{tarefa_id}", response_model=Tarefa)
-def atualizar_tarefa(tarefa_id: int, tarefa_atualizada: Tarefa):
-    for i, tarefa in enumerate(db):
-        if tarefa.id == tarefa_id:
-            tarefa_atualizada.id = tarefa_id 
-            db[i] = tarefa_atualizada
-            return tarefa_atualizada
-    raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-
-# Endpoint para APAGAR uma tarefa (Delete)
-@app.delete("/tarefas/{tarefa_id}")
-def apagar_tarefa(tarefa_id: int):
-    tarefa_para_apagar = None
-    for tarefa in db:
-        if tarefa.id == tarefa_id:
-            tarefa_para_apagar = tarefa
-            break
-    
-    if tarefa_para_apagar:
-        db.remove(tarefa_para_apagar)
-        return {"message": "Tarefa removida com sucesso"}
-    
-    raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+# --- ENDPOINT PARA LER TODAS AS TAREFAS (CORRIGIDO) ---
+@app.get("/tarefas/", response_model=List[schemas.Tarefa])
+async def listar_todas_as_tarefas(db: AsyncSession = Depends(get_db)):
+    """
+    Retorna uma lista de todas as tarefas do banco de dados.
+    """
+    tarefas = await crud.get_tarefas(db=db)
+    return tarefas
