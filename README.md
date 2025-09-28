@@ -37,7 +37,7 @@ git clone [https://github.com/notdougz/first-api.git](https://github.com/notdoug
 
 **2. Acesse a pasta do projeto:**
 ```bash
-cd SEU-REPOSITORIO
+cd first-api
 ```
 
 **3. Crie e ative o ambiente virtual:**
