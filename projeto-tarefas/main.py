@@ -1,11 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
-
-# Importando de nossos novos arquivos
 import crud
 import schemas
-from database import SessionLocal, lifespan  # Importando o lifespan que já tínhamos
+from database import SessionLocal, lifespan
 
 # --- Configuração da Aplicação FastAPI ---
 app = FastAPI(lifespan=lifespan)

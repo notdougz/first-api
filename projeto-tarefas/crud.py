@@ -21,7 +21,6 @@ async def create_tarefa(db: AsyncSession, tarefa: schemas.TarefaCreate):
     await db.refresh(db_tarefa)
     return db_tarefa
 
-# --- ADICIONE ESTA NOVA FUNÇÃO ---
 async def get_tarefas(db: AsyncSession, skip: int = 0, limit: int = 100):
     """
     Retorna uma lista de tarefas do banco de dados.
