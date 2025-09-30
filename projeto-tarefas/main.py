@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 import crud
 import schemas
 from database import SessionLocal, lifespan
+from fastapi.security import OAuth2PasswordRequestForm
+import auth
 
 # --- Configuração da Aplicação FastAPI ---
 app = FastAPI(lifespan=lifespan)
@@ -77,9 +79,34 @@ async def criar_novo_usuario(
     usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)
 ):
     """
-    Regista um novo utilizador no sistema.
+    Registra um novo utilizador no sistema.
     """
     db_usuario = await crud.get_usuario_por_email(db, email=usuario.email)
     if db_usuario:
-        raise HTTPException(status_code=400, detail="Email já registado")
+        raise HTTPException(status_code=400, detail="Email já registrado")
     return await crud.create_usuario(db=db, usuario=usuario)
+
+@app.post("/login")
+async def login_para_obter_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    """
+    Autentica um utilizador e retorna um token de acesso.
+    """
+    # 1. Procura o utilizador pelo email (que no formulário vem como 'username')
+    usuario = await crud.get_usuario_por_email(db, email=form_data.username)
+
+    # 2. Verifica se o utilizador existe e se a senha está correta
+    if not usuario or not auth.verificar_senha(form_data.password, usuario.senha_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou senha incorretos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # 3. Cria o token de acesso
+    access_token = auth.criar_token_de_acesso(
+        data={"sub": usuario.email}
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
