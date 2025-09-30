@@ -1,11 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
 import models
 import schemas
-
-# --- CONFIGURAÇÃO DE HASHING DE SENHA ---
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from auth import pwd_context
 
 async def get_tarefa(db: AsyncSession, tarefa_id: int):
     """
@@ -40,7 +37,7 @@ async def delete_tarefa(db: AsyncSession, tarefa_id: int):
         await db.commit()
     return db_tarefa
 
-async def create_tarefa(db: AsyncSession, tarefa: schemas.TarefaCreate):
+async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCreate):
     """
     Cria uma nova tarefa no banco de dados.
     """
@@ -58,7 +55,7 @@ async def create_tarefa(db: AsyncSession, tarefa: schemas.TarefaCreate):
     await db.refresh(db_tarefa)
     return db_tarefa
 
-async def get_tarefas(db: AsyncSession, skip: int = 0, limit: int = 100):
+async def get_tarefas_por_usuario(db: AsyncSession, skip: int = 0, limit: int = 100):
     """
     Retorna uma lista de tarefas do banco de dados.
     """

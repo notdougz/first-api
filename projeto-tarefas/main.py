@@ -2,10 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 import crud
+import models 
 import schemas
 from database import SessionLocal, lifespan
 from fastapi.security import OAuth2PasswordRequestForm
 import auth
+from auth import get_usuario_atual
 
 # --- Configuração da Aplicação FastAPI ---
 app = FastAPI(lifespan=lifespan)
@@ -19,94 +21,74 @@ async def get_db():
             yield db
         finally:
             await db.close()
-
-# --- Endpoints da API ---
-@app.get("/")
+            
+@app.get("/", tags=["Geral"])
 def read_root():
+    """
+    Retorna uma mensagem de boas-vindas à API.
+    """
     return {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
 
-@app.post("/tarefas/", response_model=schemas.Tarefa, status_code=201)
+@app.post("/tarefas/", response_model=schemas.Tarefa, status_code=201, tags=["Tarefas"])
 async def criar_nova_tarefa(
-    tarefa: schemas.TarefaCreate, db: AsyncSession = Depends(get_db)
+    tarefa: schemas.TarefaCreate, 
+    db: AsyncSession = Depends(get_db),
+    usuario_logado: models.Usuario = Depends(get_usuario_atual)
 ):
     """
-    Cria uma nova tarefa no banco de dados.
+    Cria uma nova tarefa para o utilizador atualmente logado.
     """
-    return await crud.create_tarefa(db=db, tarefa=tarefa)
+    return await crud.create_tarefa_para_usuario(db=db, tarefa=tarefa, dono_id=usuario_logado.id)
 
-@app.get("/tarefas/", response_model=List[schemas.Tarefa])
-async def listar_todas_as_tarefas(db: AsyncSession = Depends(get_db)):
+@app.get("/tarefas/", response_model=List[schemas.Tarefa], tags=["Tarefas"])
+async def listar_tarefas_do_usuario(
+    db: AsyncSession = Depends(get_db),
+    usuario_logado: models.Usuario = Depends(get_usuario_atual)
+):
     """
-    Retorna uma lista de todas as tarefas do banco de dados.
+    Retorna uma lista de todas as tarefas do utilizador logado.
     """
-    tarefas = await crud.get_tarefas(db=db)
-    return tarefas
+    return await crud.get_tarefas_por_usuario(db=db, dono_id=usuario_logado.id)
 
-@app.get("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
-async def ler_tarefa_por_id(tarefa_id: int, db: AsyncSession = Depends(get_db)):
+@app.get("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
+async def ler_tarefa_por_id(
+    tarefa_id: int, 
+    db: AsyncSession = Depends(get_db),
+    usuario_logado: models.Usuario = Depends(get_usuario_atual)
+):
     """
-    Retorna uma tarefa específica buscando pelo seu ID.
+    Retorna uma tarefa específica, se pertencer ao utilizador logado.
     """
     db_tarefa = await crud.get_tarefa(db, tarefa_id=tarefa_id)
-    if db_tarefa is None:
+    if db_tarefa is None or db_tarefa.dono_id != usuario_logado.id:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
     return db_tarefa
 
-@app.put("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+@app.put("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
 async def atualizar_tarefa_por_id(
-    tarefa_id: int, tarefa: schemas.TarefaCreate, db: AsyncSession = Depends(get_db)
+    tarefa_id: int, 
+    tarefa: schemas.TarefaCreate, 
+    db: AsyncSession = Depends(get_db),
+    usuario_logado: models.Usuario = Depends(get_usuario_atual)
 ):
     """
-    Atualiza os dados de uma tarefa existente.
+    Atualiza uma tarefa, se pertencer ao utilizador logado.
     """
-    db_tarefa = await crud.update_tarefa(db, tarefa_id=tarefa_id, tarefa=tarefa)
-    if db_tarefa is None:
+    db_tarefa_existente = await crud.get_tarefa(db, tarefa_id=tarefa_id)
+    if db_tarefa_existente is None or db_tarefa_existente.dono_id != usuario_logado.id:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-    return db_tarefa
+    return await crud.update_tarefa(db, tarefa_id=tarefa_id, tarefa=tarefa)
 
-@app.delete("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
-async def apagar_tarefa_por_id(tarefa_id: int, db: AsyncSession = Depends(get_db)):
+@app.delete("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
+async def apagar_tarefa_por_id(
+    tarefa_id: int, 
+    db: AsyncSession = Depends(get_db),
+    usuario_logado: models.Usuario = Depends(get_usuario_atual)
+):
     """
-    Apaga uma tarefa do banco de dados.
+    Apaga uma tarefa, se pertencer ao utilizador logado.
     """
-    db_tarefa = await crud.delete_tarefa(db, tarefa_id=tarefa_id)
-    if db_tarefa is None:
+    db_tarefa_existente = await crud.get_tarefa(db, tarefa_id=tarefa_id)
+    if db_tarefa_existente is None or db_tarefa_existente.dono_id != usuario_logado.id:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-    return db_tarefa
-
-@app.post("/usuarios/", response_model=schemas.Usuario)
-async def criar_novo_usuario(
-    usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)
-):
-    """
-    Registra um novo utilizador no sistema.
-    """
-    db_usuario = await crud.get_usuario_por_email(db, email=usuario.email)
-    if db_usuario:
-        raise HTTPException(status_code=400, detail="Email já registrado")
-    return await crud.create_usuario(db=db, usuario=usuario)
-
-@app.post("/login")
-async def login_para_obter_token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
-):
-    """
-    Autentica um utilizador e retorna um token de acesso.
-    """
-    # 1. Procura o utilizador pelo email (que no formulário vem como 'username')
-    usuario = await crud.get_usuario_por_email(db, email=form_data.username)
-
-    # 2. Verifica se o utilizador existe e se a senha está correta
-    if not usuario or not auth.verificar_senha(form_data.password, usuario.senha_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Email ou senha incorretos",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # 3. Cria o token de acesso
-    access_token = auth.criar_token_de_acesso(
-        data={"sub": usuario.email}
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}
+    return await crud.delete_tarefa(db, tarefa_id=tarefa_id)
