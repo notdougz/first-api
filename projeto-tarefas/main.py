@@ -92,3 +92,37 @@ async def apagar_tarefa_por_id(
     if db_tarefa_existente is None or db_tarefa_existente.dono_id != usuario_logado.id:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
     return await crud.delete_tarefa(db, tarefa_id=tarefa_id)
+
+@app.post("/usuarios/", response_model=schemas.Usuario, tags=["Utilizadores"])
+async def criar_novo_usuario(
+    usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)
+):
+    """
+    Regista um novo utilizador no sistema.
+    """
+    db_usuario = await crud.get_usuario_por_email(db, email=usuario.email)
+    if db_usuario:
+        raise HTTPException(status_code=400, detail="Email já registado")
+    return await crud.create_usuario(db=db, usuario=usuario)
+
+@app.post("/login", tags=["Utilizadores"])
+async def login_para_obter_token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
+    """
+    Autentica um utilizador e retorna um token de acesso.
+    """
+    usuario = await crud.get_usuario_por_email(db, email=form_data.username)
+
+    if not usuario or not auth.verificar_senha(form_data.password, usuario.senha_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email ou senha incorretos",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token = auth.criar_token_de_acesso(
+        data={"sub": usuario.email}
+    )
+    
+    return {"access_token": access_token, "token_type": "bearer"}
