@@ -23,7 +23,6 @@ async def get_db():
 def read_root():
     return {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
 
-# --- NOVO ENDPOINT DE CRIAÇÃO ---
 @app.post("/tarefas/", response_model=schemas.Tarefa, status_code=201)
 async def criar_nova_tarefa(
     tarefa: schemas.TarefaCreate, db: AsyncSession = Depends(get_db)
@@ -33,7 +32,6 @@ async def criar_nova_tarefa(
     """
     return await crud.create_tarefa(db=db, tarefa=tarefa)
 
-# --- ENDPOINT PARA LER TODAS AS TAREFAS ---
 @app.get("/tarefas/", response_model=List[schemas.Tarefa])
 async def listar_todas_as_tarefas(db: AsyncSession = Depends(get_db)):
     """
@@ -73,3 +71,15 @@ async def apagar_tarefa_por_id(tarefa_id: int, db: AsyncSession = Depends(get_db
     if db_tarefa is None:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
     return db_tarefa
+
+@app.post("/usuarios/", response_model=schemas.Usuario)
+async def criar_novo_usuario(
+    usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)
+):
+    """
+    Regista um novo utilizador no sistema.
+    """
+    db_usuario = await crud.get_usuario_por_email(db, email=usuario.email)
+    if db_usuario:
+        raise HTTPException(status_code=400, detail="Email já registado")
+    return await crud.create_usuario(db=db, usuario=usuario)

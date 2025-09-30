@@ -1,7 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from passlib.context import CryptContext
 import models
 import schemas
+
+# --- CONFIGURAÇÃO DE HASHING DE SENHA ---
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def get_tarefa(db: AsyncSession, tarefa_id: int):
     """
@@ -60,3 +64,21 @@ async def get_tarefas(db: AsyncSession, skip: int = 0, limit: int = 100):
     """
     result = await db.execute(select(models.Tarefa).offset(skip).limit(limit))
     return result.scalars().all()
+
+async def get_usuario_por_email(db: AsyncSession, email: str):
+    """
+    Busca e retorna um utilizador pelo seu email.
+    """
+    result = await db.execute(select(models.Usuario).filter(models.Usuario.email == email))
+    return result.scalar_one_or_none()
+
+async def create_usuario(db: AsyncSession, usuario: schemas.UsuarioCreate):
+    """
+    Cria um novo utilizador no banco de dados com a senha encriptada.
+    """
+    senha_hash = pwd_context.hash(usuario.senha)
+    db_usuario = models.Usuario(email=usuario.email, senha_hash=senha_hash)
+    db.add(db_usuario)
+    await db.commit()
+    await db.refresh(db_usuario)
+    return db_usuario
