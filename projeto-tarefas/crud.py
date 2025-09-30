@@ -37,15 +37,17 @@ async def delete_tarefa(db: AsyncSession, tarefa_id: int):
         await db.commit()
     return db_tarefa
 
-async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCreate):
+async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCreate, dono_id: int):
     """
-    Cria uma nova tarefa no banco de dados.
+    Cria uma nova tarefa no banco de dados, associada a um utilizador.
     """
-    # 1. Cria um objeto do modelo SQLAlchemy a partir dos dados recebidos.
+    # 1. Cria um objeto do modelo SQLAlchemy a partir dos dados recebidos,
+    #    incluindo o ID do dono.
     db_tarefa = models.Tarefa(
         titulo=tarefa.titulo,
         descricao=tarefa.descricao,
-        concluida=tarefa.concluida
+        concluida=tarefa.concluida,
+        dono_id=dono_id  # <-- AQUI ESTÁ A CORREÇÃO PRINCIPAL
     )
     # 2. Adiciona o objeto à sessão do banco de dados.
     db.add(db_tarefa)
@@ -55,11 +57,16 @@ async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCre
     await db.refresh(db_tarefa)
     return db_tarefa
 
-async def get_tarefas_por_usuario(db: AsyncSession, skip: int = 0, limit: int = 100):
+async def get_tarefas_por_usuario(db: AsyncSession, dono_id: int, skip: int = 0, limit: int = 100):
     """
-    Retorna uma lista de tarefas do banco de dados.
+    Retorna uma lista de tarefas de um utilizador específico.
     """
-    result = await db.execute(select(models.Tarefa).offset(skip).limit(limit))
+    result = await db.execute(
+        select(models.Tarefa)
+        .filter(models.Tarefa.dono_id == dono_id)
+        .offset(skip)
+        .limit(limit)
+    )
     return result.scalars().all()
 
 async def get_usuario_por_email(db: AsyncSession, email: str):
