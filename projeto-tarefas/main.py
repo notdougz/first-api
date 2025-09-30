@@ -33,7 +33,7 @@ async def criar_nova_tarefa(
     """
     return await crud.create_tarefa(db=db, tarefa=tarefa)
 
-# --- ENDPOINT PARA LER TODAS AS TAREFAS (CORRIGIDO) ---
+# --- ENDPOINT PARA LER TODAS AS TAREFAS ---
 @app.get("/tarefas/", response_model=List[schemas.Tarefa])
 async def listar_todas_as_tarefas(db: AsyncSession = Depends(get_db)):
     """
@@ -41,3 +41,35 @@ async def listar_todas_as_tarefas(db: AsyncSession = Depends(get_db)):
     """
     tarefas = await crud.get_tarefas(db=db)
     return tarefas
+
+@app.get("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+async def ler_tarefa_por_id(tarefa_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Retorna uma tarefa específica buscando pelo seu ID.
+    """
+    db_tarefa = await crud.get_tarefa(db, tarefa_id=tarefa_id)
+    if db_tarefa is None:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+    return db_tarefa
+
+@app.put("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+async def atualizar_tarefa_por_id(
+    tarefa_id: int, tarefa: schemas.TarefaCreate, db: AsyncSession = Depends(get_db)
+):
+    """
+    Atualiza os dados de uma tarefa existente.
+    """
+    db_tarefa = await crud.update_tarefa(db, tarefa_id=tarefa_id, tarefa=tarefa)
+    if db_tarefa is None:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+    return db_tarefa
+
+@app.delete("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+async def apagar_tarefa_por_id(tarefa_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Apaga uma tarefa do banco de dados.
+    """
+    db_tarefa = await crud.delete_tarefa(db, tarefa_id=tarefa_id)
+    if db_tarefa is None:
+        raise HTTPException(status_code=404, detail="Tarefa não encontrada")
+    return db_tarefa
