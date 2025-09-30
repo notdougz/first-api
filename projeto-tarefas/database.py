@@ -2,7 +2,6 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-import models 
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./tarefas.db"
 engine = create_async_engine(
@@ -12,6 +11,7 @@ SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine
 Base = declarative_base()
 
 async def create_tables():
+    import models 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
