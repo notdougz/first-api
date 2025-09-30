@@ -1,41 +1,39 @@
-import pytest
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import AsyncGenerator
+# tests/test_main.py
+
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from main import app, get_db
 from models import Base
-from tests.test_database import TestingSessionLocal, engine
+import pytest
 
+# --- Configuração do Banco de Dados de Teste Síncrono ---
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
-# 1. Sobrescrever a dependência get_db para usar o banco de dados de teste
-async def override_get_db():
-    async with TestingSessionLocal() as db:
+# 'engine' síncrono para os testes
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Cria as tabelas no início dos testes
+Base.metadata.create_all(bind=engine)
+
+# --- Sobrescreve a dependência get_db para usar o banco de teste ---
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
         yield db
+    finally:
+        db.close()
 
 app.dependency_overrides[get_db] = override_get_db
 
-# 2. Pytest fixture para criar e destruir as tabelas para cada teste
-@pytest.fixture
-async def db_session() -> AsyncGenerator[AsyncSession, None]:
-    async with engine.begin() as conn:
-        # Usamos a Base importada de models para criar as tabelas corretas
-        await conn.run_sync(Base.metadata.create_all)
-    
-    async with TestingSessionLocal() as session:
-        yield session
-    
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+# --- Cria o cliente de teste ---
+client = TestClient(app)
 
-# 3. Pytest fixture para criar um cliente de teste
-@pytest.fixture
-async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
-
-# 4. O nosso primeiro teste!
-@pytest.mark.anyio
-async def test_read_root(client: AsyncClient):
-    response = await client.get("/")
+# --- O Nosso Primeiro Teste 
+def test_read_root():
+    response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
