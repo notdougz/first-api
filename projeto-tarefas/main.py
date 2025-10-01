@@ -11,18 +11,18 @@ from database import lifespan
 
 app = FastAPI(lifespan=lifespan)
 
-@app.get("/")
+@app.get("/", tags=["Geral"])
 def read_root():
     return {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
 
-@app.post("/usuarios/", response_model=schemas.Usuario, status_code=status.HTTP_201_CREATED)
+@app.post("/usuarios/", response_model=schemas.Usuario, status_code=status.HTTP_201_CREATED, tags=["Utilizadores"])
 async def criar_usuario(usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)):
     db_usuario = await crud.get_usuario_por_email(db, email=usuario.email)
     if db_usuario:
         raise HTTPException(status_code=400, detail="Email já registado")
     return await crud.create_usuario(db=db, usuario=usuario)
 
-@app.post("/login")
+@app.post("/login", tags=["Utilizadores"])
 async def login_para_obter_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ):
@@ -36,7 +36,7 @@ async def login_para_obter_token(
     access_token = criar_token_de_acesso(data={"sub": usuario.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/tarefas/", response_model=schemas.Tarefa, status_code=status.HTTP_201_CREATED)
+@app.post("/tarefas/", response_model=schemas.Tarefa, status_code=status.HTTP_201_CREATED, tags=["Tarefas"])
 async def criar_tarefa(
     tarefa: schemas.TarefaCreate,
     usuario_atual: models.Usuario = Depends(get_usuario_atual),
@@ -46,7 +46,7 @@ async def criar_tarefa(
         db=db, tarefa=tarefa, dono_id=usuario_atual.id
     )
 
-@app.get("/tarefas/", response_model=List[schemas.Tarefa])
+@app.get("/tarefas/", response_model=List[schemas.Tarefa], tags=["Tarefas"])
 async def ler_tarefas_do_usuario(
     skip: int = 0,
     limit: int = 100,
@@ -58,7 +58,7 @@ async def ler_tarefas_do_usuario(
     )
     return tarefas
 
-@app.get("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+@app.get("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
 async def ler_tarefa_especifica(
     tarefa_id: int,
     usuario_atual: models.Usuario = Depends(get_usuario_atual),
@@ -71,7 +71,7 @@ async def ler_tarefa_especifica(
         raise HTTPException(status_code=403, detail="Não tem permissão para aceder a esta tarefa")
     return db_tarefa
 
-@app.put("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+@app.put("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
 async def atualizar_tarefa(
     tarefa_id: int,
     tarefa: schemas.TarefaCreate,
@@ -85,7 +85,7 @@ async def atualizar_tarefa(
         raise HTTPException(status_code=403, detail="Não tem permissão para atualizar esta tarefa")
     return await crud.update_tarefa(db=db, tarefa_id=tarefa_id, tarefa=tarefa)
 
-@app.delete("/tarefas/{tarefa_id}", response_model=schemas.Tarefa)
+@app.delete("/tarefas/{tarefa_id}", response_model=schemas.Tarefa, tags=["Tarefas"])
 async def deletar_tarefa(
     tarefa_id: int,
     usuario_atual: models.Usuario = Depends(get_usuario_atual),
