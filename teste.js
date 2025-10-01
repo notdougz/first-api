@@ -1,0 +1,258 @@
+// app.js
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ... (nenhuma mudança no topo do arquivo, até a função de logout) ...
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const showRegisterLink = document.getElementById('show-register');
+    const showLoginLink = document.getElementById('show-login');
+    const authContainer = document.getElementById('auth-container');
+    const appContainer = document.getElementById('app-container');
+    const authMessage = document.getElementById('auth-message');
+    const taskList = document.getElementById('task-list');
+    const logoutButton = document.getElementById('logout-button');
+    const addTaskForm = document.getElementById('add-task-form');
+
+    const API_URL = 'http://127.0.0.1:8000';
+
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        authContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        fetchTasks();
+    }
+    
+    showRegisterLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        authMessage.textContent = '';
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+    });
+
+    showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        authMessage.textContent = '';
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authMessage.textContent = '';
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        const formData = new URLSearchParams();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        try {
+            const response = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Falha no login');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('accessToken', data.access_token);
+            authContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            await fetchTasks();
+
+        } catch (error) {
+            authMessage.textContent = error.message;
+        }
+    });
+
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authMessage.textContent = '';
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+
+        try {
+            const response = await fetch(`${API_URL}/usuarios/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, senha: password }),
+            });
+
+            if (response.status === 400) {
+                throw new Error('Email já registado. Tente outro.');
+            }
+            if (!response.ok) {
+                throw new Error('Ocorreu um erro ao registar.');
+            }
+            
+            authMessage.style.color = 'green';
+            authMessage.textContent = 'Usuário criado com sucesso! Por favor, faça o login.';
+            
+            registerForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            registerForm.reset();
+
+        } catch (error) {
+            authMessage.style.color = 'red';
+            authMessage.textContent = error.message;
+        }
+    });
+
+    logoutButton.addEventListener('click', () => {
+        localStorage.removeItem('accessToken');
+        authContainer.classList.remove('hidden');
+        appContainer.classList.add('hidden');
+        loginForm.reset();
+        registerForm.reset();
+        authMessage.textContent = '';
+    });
+
+    addTaskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = document.getElementById('task-title').value;
+        const description = document.getElementById('task-description').value;
+        const token = localStorage.getItem('accessToken');
+
+        try {
+            const response = await fetch(`${API_URL}/tarefas/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    titulo: title,
+                    descricao: description,
+                    concluida: false
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Não foi possível adicionar a tarefa.');
+            }
+
+            addTaskForm.reset();
+            await fetchTasks();
+
+        } catch (error) {
+            document.getElementById('app-message').textContent = error.message;
+        }
+    });
+
+    // *** NOVA LÓGICA PARA CLiques NA LISTA DE TAREFAS ***
+    taskList.addEventListener('click', async (e) => {
+        const target = e.target;
+        const taskItem = target.closest('.task-item');
+        if (!taskItem) return;
+
+        const taskId = taskItem.dataset.id;
+        const token = localStorage.getItem('accessToken');
+
+        // Se o botão de deletar foi clicado
+        if (target.classList.contains('delete-btn')) {
+            try {
+                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Falha ao deletar tarefa.');
+                await fetchTasks(); // Atualiza a lista
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+
+        // Se o botão de concluir foi clicado
+        if (target.classList.contains('complete-btn')) {
+            // Primeiro, pegamos os dados atuais da tarefa para poder enviar no PUT
+            const currentTitle = taskItem.querySelector('strong').textContent;
+            const currentDesc = taskItem.querySelector('p').textContent;
+            
+            try {
+                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        titulo: currentTitle,
+                        descricao: currentDesc,
+                        concluida: true // A única mudança é aqui
+                    })
+                });
+                if (!response.ok) throw new Error('Falha ao concluir tarefa.');
+                await fetchTasks(); // Atualiza a lista
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+    });
+
+
+    async function fetchTasks() {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            logoutButton.click();
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/tarefas/`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` },
+            });
+
+            if (response.status === 401) {
+                logoutButton.click();
+                throw new Error('Sessão expirada. Faça login novamente.');
+            }
+            if (!response.ok) {
+                throw new Error('Não foi possível carregar as tarefas.');
+            }
+
+            const tasks = await response.json();
+            displayTasks(tasks);
+
+        } catch (error) {
+            authMessage.textContent = error.message;
+        }
+    }
+    
+    // *** FUNÇÃO ATUALIZADA PARA MOSTRAR OS BOTÕES ***
+    function displayTasks(tasks) {
+        taskList.innerHTML = '';
+        
+        if (tasks.length === 0) {
+            taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
+            return;
+        }
+
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            // Adiciona a classe 'completed' se a tarefa estiver concluída
+            if (task.concluida) {
+                li.classList.add('completed');
+            }
+            li.dataset.id = task.id;
+
+            li.innerHTML = `
+                <div class="task-details">
+                    <strong>${task.titulo}</strong>
+                    <p>${task.descricao || ''}</p>
+                </div>
+                <div class="task-actions">
+                    <span class="status">${task.concluida ? 'Concluída' : 'Pendente'}</span>
+                    ${!task.concluida ? '<button class="complete-btn">Concluir</button>' : ''}
+                    <button class="delete-btn">Deletar</button>
+                </div>
+            `;
+            taskList.appendChild(li);
+        });
+    }
+});

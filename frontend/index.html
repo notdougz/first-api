@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-container">
+        <form id="login-form">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Email" required>
+            <input type="password" id="login-password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+            <p>Não tem uma conta? <a href="#" id="show-register">Registre-se</a></p>
+        </form>
+
+        <form id="register-form" class="hidden">
+            <h2>Registro</h2>
+            <input type="email" id="register-email" placeholder="Email" required>
+            <input type="password" id="register-password" placeholder="Senha" required>
+            <button type="submit">Registrar</button>
+            <p>Já tem uma conta? <a href="#" id="show-login">Faça Login</a></p>
+        </form>
+        <p id="auth-message" class="message"></p>
+    </div>
+
+    <div id="app-container" class="hidden">
+        <header>
+            <h1>Minhas Tarefas</h1>
+            <button id="logout-button">Sair</button>
+        </header>
+        
+        <form id="add-task-form">
+            <input type="text" id="task-title" placeholder="Título da tarefa" required>
+            <input type="text" id="task-description" placeholder="Descrição (opcional)">
+            <button type="submit">Adicionar Tarefa</button>
+        </form>
+
+        <ul id="task-list">
+            </ul>
+        <p id="app-message" class="message"></p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

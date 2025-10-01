@@ -1,3 +1,4 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -9,6 +10,15 @@ from auth import criar_token_de_acesso, get_usuario_atual, verificar_senha, get_
 from database import lifespan
 
 app = FastAPI(lifespan=lifespan)
+
+# Permite CORS para todas as origens
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 @app.get("/", tags=["Geral"])
 def read_root():
