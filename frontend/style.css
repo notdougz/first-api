@@ -1,6 +1,6 @@
-/* style.css (versão aprimorada) */
+/* style.css (Com suporte para Tema Claro e Escuro) */
 
-/* ===== Variáveis de Cores e Fontes ===== */
+/* ===== Tema Claro (Padrão) ===== */
 :root {
     --primary-color: #4f46e5;
     --primary-hover: #4338ca;
@@ -10,13 +10,43 @@
     --warning-hover: #d97706;
     --success-color: #16a34a;
     --success-hover: #15803d;
-    --light-gray: #f3f4f6;
-    --medium-gray: #d1d5db;
-    --dark-gray: #4b5563;
-    --text-color: #1f2937;
+
+    --background-primary: #f3f4f6;
+    --background-secondary: #ffffff;
+    --background-item: #f9fafb;
+    --border-color: #d1d5db;
+
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
     --white: #ffffff;
     --font-family: 'Poppins', sans-serif;
+
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
+
+/* ===== Tema Escuro (Ativado com a classe .dark-mode no body) ===== */
+body.dark-mode {
+    --primary-color: #6d28d9;
+    --primary-hover: #5b21b6;
+    --danger-color: #be123c;
+    --danger-hover: #9f1239;
+    --warning-color: #d97706;
+    --warning-hover: #b45309;
+    --success-color: #16a34a;
+    --success-hover: #15803d;
+
+    --background-primary: #111827;
+    --background-secondary: #1f2937;
+    --background-item: #374151;
+    --border-color: #4b5563;
+
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --white: #ffffff;
+    
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
 
 /* ===== Estilos Globais ===== */
 * {
@@ -25,24 +55,27 @@
 
 body {
     font-family: var(--font-family);
-    background-color: var(--light-gray);
-    color: var(--text-color);
+    background-color: var(--background-primary);
+    color: var(--text-primary);
     margin: 0;
     padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ===== Container Principal ===== */
 #auth-container, #app-container {
-    background: var(--white);
+    background: var(--background-secondary);
     padding: 2.5em;
     border-radius: 16px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
+    border: 1px solid var(--border-color);
     width: 100%;
     max-width: 600px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .hidden {
@@ -51,7 +84,7 @@ body {
 
 /* ===== Títulos e Links ===== */
 h1, h2 {
-    color: var(--text-color);
+    color: var(--text-primary);
     margin-top: 0;
 }
 
@@ -74,16 +107,21 @@ form {
 
 input[type="email"], input[type="password"], input[type="text"] {
     padding: 12px 15px;
-    border: 1px solid var(--medium-gray);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1em;
     font-family: var(--font-family);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 }
-input[type="email"]:focus, input[type="password"]:focus, input[type="text"]:focus {
+input::placeholder {
+    color: var(--text-secondary);
+}
+input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
 /* ===== Botões ===== */
@@ -120,10 +158,58 @@ form button[type="submit"]:hover {
 header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--medium-gray);
+    align-items: center; 
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 1em;
     margin-bottom: 1.5em;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 0.8em;
+}
+
+#theme-toggle-button {
+    background-color: transparent;
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+}
+#theme-toggle-button:hover {
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+}
+
+/* Estilo do botão de tema movido para uma posição fixa */
+#theme-toggle-button {
+    position: fixed; /* Fica fixo na tela mesmo com rolagem */
+    top: 20px;
+    right: 20px;
+    background-color: var(--background-item);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    width: 45px;  /* Largura e altura para um círculo perfeito */
+    height: 45px;
+    border-radius: 50%; /* Deixa o botão redondo */
+    font-size: 1.1em;
+    z-index: 1000; /* Garante que ele fique acima de outros elementos */
+    padding: 0; /* Remove padding extra */
+}
+
+/* Remove a borda anterior que era aplicada a ele no cabeçalho */
+.header-buttons #theme-toggle-button {
+    border: none;
+    padding: 8px 12px;
+    position: static; /* Reseta o posicionamento se estiver no header */
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+}
+
+#theme-toggle-button:hover {
+    color: var(--text-primary);
+    border-color: var(--primary-color);
+    background-color: var(--background-secondary);
 }
 
 #logout-button { background-color: var(--danger-color); color: var(--white); }
@@ -135,42 +221,43 @@ header {
     margin-top: 2em;
 }
 
-/* ===== Itens da Tarefa (Melhorado) ===== */
+/* ===== Itens da Tarefa ===== */
 .task-item {
     display: flex;
     align-items: center;
     padding: 1.2em;
-    border: 1px solid transparent;
     border-radius: 12px;
     margin-bottom: 1em;
-    background-color: #f9fafb;
-    border: 1px solid var(--light-gray);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    background-color: var(--background-item);
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease;
 }
 .task-item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
 }
 
 .task-details { flex-grow: 1; }
-.task-details strong { font-size: 1.1em; font-weight: 500; }
-.task-details p { margin: 0.2em 0 0; color: var(--dark-gray); font-size: 0.9em; }
+.task-details strong { font-size: 1.1em; font-weight: 500; color: var(--text-primary); }
+.task-details p { margin: 0.2em 0 0; color: var(--text-secondary); font-size: 0.9em; }
 
-.task-item.completed .task-details { text-decoration: line-through; color: var(--medium-gray); }
+.task-item.completed .task-details { text-decoration: line-through; }
+.task-item.completed .task-details strong { color: var(--text-secondary); }
 
 /* Botões de Ação da Tarefa */
 .task-actions { display: flex; align-items: center; gap: 0.7em; flex-shrink: 0; }
 
-.complete-btn, .delete-btn, .edit-btn, .save-btn { padding: 8px 12px; font-size: 0.85em; }
-.complete-btn { background-color: var(--success-color); color: var(--white); }
+.complete-btn, .delete-btn, .edit-btn, .save-btn { padding: 8px 12px; font-size: 0.85em; color: var(--white); }
+.complete-btn { background-color: var(--success-color); }
 .complete-btn:hover { background-color: var(--success-hover); }
-.delete-btn { background-color: var(--danger-color); color: var(--white); }
+.delete-btn { background-color: var(--danger-color); }
 .delete-btn:hover { background-color: var(--danger-hover); }
-.edit-btn { background-color: var(--warning-color); color: var(--white); }
+.edit-btn { background-color: var(--warning-color); }
 .edit-btn:hover { background-color: var(--warning-hover); }
-.save-btn { background-color: var(--primary-color); color: var(--white); }
+.save-btn { background-color: var(--primary-color); }
 .save-btn:hover { background-color: var(--primary-hover); }
 
 /* ===== Mensagens de Feedback ===== */
 .message { margin-top: 1em; text-align: center; font-weight: 500; }
 #auth-message { color: var(--danger-color); }
+

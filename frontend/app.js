@@ -1,27 +1,86 @@
 // app.js
 
+/**
+ * Este evento garante que o nosso código JavaScript só vai rodar
+ * depois que toda a página HTML for carregada e estiver pronta.
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    // ... (nenhuma mudança no topo do arquivo, até a função addTaskForm) ...
+    
+    // --- Seletores de Elementos ---
+    // Guardamos em constantes os elementos do HTML que vamos manipular.
+
+    // Elementos de autenticação (login/registro)
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const showRegisterLink = document.getElementById('show-register');
     const showLoginLink = document.getElementById('show-login');
     const authContainer = document.getElementById('auth-container');
-    const appContainer = document.getElementById('app-container');
     const authMessage = document.getElementById('auth-message');
+
+    // Elementos principais da aplicação
+    const appContainer = document.getElementById('app-container');
     const taskList = document.getElementById('task-list');
     const logoutButton = document.getElementById('logout-button');
     const addTaskForm = document.getElementById('add-task-form');
 
+    // Elementos do seletor de tema
+    const themeToggleButton = document.getElementById('theme-toggle-button');
+    const themeIcon = themeToggleButton.querySelector('i');
+
+    // --- Configuração da API ---
+    // URL base do nosso backend FastAPI
     const API_URL = 'http://127.0.0.1:8000';
 
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-        authContainer.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        fetchTasks();
+
+    // --- Gerenciamento do Tema (Modo Noturno) ---
+    /**
+     * Prepara e controla a troca de tema entre claro e escuro.
+     * A preferência do usuário é salva no navegador para visitas futuras.
+     */
+    function setupTheme() {
+        // Verifica se o usuário já tinha um tema salvo
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        // Adiciona o evento de clique ao botão de troca de tema
+        themeToggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            
+            let theme = 'light';
+            // Verifica qual tema está ativo para salvar a escolha
+            if (document.body.classList.contains('dark-mode')) {
+                theme = 'dark';
+                themeIcon.classList.replace('fa-moon', 'fa-sun'); // Troca ícone para sol
+            } else {
+                themeIcon.classList.replace('fa-sun', 'fa-moon'); // Troca ícone para lua
+            }
+            localStorage.setItem('theme', theme); // Salva a escolha
+        });
     }
-    
+
+
+    // --- Inicialização da Aplicação ---
+    /**
+     * Função principal que inicia o app.
+     * Chama a função de tema e verifica se o usuário já está logado.
+     */
+    function initializeApp() {
+        setupTheme(); // Configura o tema
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            // Se encontrou um token, mostra o app principal
+            authContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            fetchTasks(); // Busca as tarefas do usuário
+        }
+        // Se não houver token, a tela de login/registro continua visível
+    }
+
+    // --- Eventos dos Formulários de Autenticação ---
+    // Alterna entre os formulários de login e registro
     showRegisterLink.addEventListener('click', (e) => {
         e.preventDefault();
         authMessage.textContent = '';
@@ -36,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.classList.remove('hidden');
     });
 
+    // Lida com o envio do formulário de login
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         authMessage.textContent = '';
@@ -69,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Lida com o envio do formulário de registro
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         authMessage.textContent = '';
@@ -102,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Lida com o clique no botão de logout
     logoutButton.addEventListener('click', () => {
         localStorage.removeItem('accessToken');
         authContainer.classList.remove('hidden');
@@ -111,6 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
         authMessage.textContent = '';
     });
 
+    // --- Gerenciamento de Tarefas ---
+    // Lida com o envio do formulário para adicionar nova tarefa
     addTaskForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const title = document.getElementById('task-title').value;
@@ -143,7 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // LÓGICA DE CLIQUES NA LISTA DE TAREFAS (ATUALIZADA)
+    /**
+     * Gerencia todos os cliques na lista de tarefas para
+     * deletar, concluir ou editar uma tarefa.
+     */
     taskList.addEventListener('click', async (e) => {
         const target = e.target;
         const taskItem = target.closest('.task-item');
@@ -153,8 +220,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('accessToken');
         const isCompleted = taskItem.classList.contains('completed');
 
-        // Deletar tarefa
-        if (target.classList.contains('delete-btn')) {
+        // Ação de Deletar
+        if (target.closest('.delete-btn')) {
             try {
                 await fetch(`${API_URL}/tarefas/${taskId}`, {
                     method: 'DELETE',
@@ -164,8 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error(error.message); }
         }
 
-        // Concluir tarefa
-        if (target.classList.contains('complete-btn')) {
+        // Ação de Concluir
+        if (target.closest('.complete-btn')) {
             const currentTitle = taskItem.querySelector('.task-details strong').textContent;
             const currentDesc = taskItem.querySelector('.task-details p').textContent;
             try {
@@ -181,8 +248,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error(error.message); }
         }
 
-        // *** NOVO: Entrar no modo de edição ***
-        if (target.classList.contains('edit-btn')) {
+        // Entrar no modo de Edição
+        if (target.closest('.edit-btn')) {
             const taskDetails = taskItem.querySelector('.task-details');
             const currentTitle = taskDetails.querySelector('strong').textContent;
             const currentDesc = taskDetails.querySelector('p').textContent;
@@ -192,13 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" class="edit-desc" value="${currentDesc}">
             `;
             
-            target.textContent = 'Salvar';
-            target.classList.remove('edit-btn');
-            target.classList.add('save-btn');
+            const editButton = taskItem.querySelector('.edit-btn');
+            editButton.innerHTML = '<i class="fas fa-save"></i>';
+            editButton.title = 'Salvar';
+            editButton.classList.replace('edit-btn', 'save-btn');
         }
 
-        // *** NOVO: Salvar a edição ***
-        else if (target.classList.contains('save-btn')) {
+        // Salvar a Edição
+        else if (target.closest('.save-btn')) {
             const newTitle = taskItem.querySelector('.edit-title').value;
             const newDesc = taskItem.querySelector('.edit-desc').value;
             
@@ -212,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify({
                         titulo: newTitle,
                         descricao: newDesc,
-                        concluida: isCompleted // Mantém o status original
+                        concluida: isCompleted
                     })
                 });
                 await fetchTasks();
@@ -221,8 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // --- Funções de Requisição à API ---
+    /**
+     * Busca as tarefas do usuário na API e chama a função para exibi-las.
+     */
     async function fetchTasks() {
-        //... (função sem alterações)
         const token = localStorage.getItem('accessToken');
         if (!token) {
             logoutButton.click();
@@ -251,36 +322,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // FUNÇÃO DISPLAY ATUALIZADA COM O BOTÃO "EDITAR"
+    /**
+     * Exibe as tarefas na tela, criando os elementos HTML para cada uma.
+     * @param {Array} tasks - Uma lista de objetos de tarefa vindos da API.
+     */
     function displayTasks(tasks) {
-    taskList.innerHTML = '';
-    
-    if (tasks.length === 0) {
-        taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
-        return;
-    }
-
-    tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.className = 'task-item';
-        if (task.concluida) {
-            li.classList.add('completed');
+        taskList.innerHTML = '';
+        
+        if (tasks.length === 0) {
+            taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
+            return;
         }
-        li.dataset.id = task.id;
 
-        // HTML atualizado com ícones
-        li.innerHTML = `
-            <div class="task-details">
-                <strong>${task.titulo}</strong>
-                <p>${task.descricao || ''}</p>
-            </div>
-            <div class="task-actions">
-                ${!task.concluida ? '<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>' : ''}
-                <button class="edit-btn" title="Editar"><i class="fas fa-pencil-alt"></i></button>
-                <button class="delete-btn" title="Deletar"><i class="fas fa-trash"></i></button>
-            </div>
-        `;
-        taskList.appendChild(li);
-    });
+        tasks.forEach(task => {
+            const li = document.createElement('li');
+            li.className = 'task-item';
+            if (task.concluida) {
+                li.classList.add('completed');
+            }
+            li.dataset.id = task.id;
+
+            li.innerHTML = `
+                <div class="task-details">
+                    <strong>${task.titulo}</strong>
+                    <p>${task.descricao || ''}</p>
+                </div>
+                <div class="task-actions">
+                    ${!task.concluida ? '<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>' : ''}
+                    <button class="edit-btn" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+                    <button class="delete-btn" title="Deletar"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            taskList.appendChild(li);
+        });
     }
+
+    // Inicia a aplicação quando a página é carregada
+    initializeApp();
 });
