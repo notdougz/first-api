@@ -192,3 +192,27 @@ header {
 .delete-btn:hover {
     background-color: #c53030;
 }
+
+.task-item .edit-btn {
+    background-color: #f6ad55;
+    color: white;
+}
+.task-item .edit-btn:hover {
+    background-color: #dd6b20;
+}
+
+.task-item .save-btn {
+    background-color: #3182ce;
+    color: white;
+}
+.task-item .save-btn:hover {
+    background-color: #2b6cb0;
+}
+
+.task-item input[type="text"] {
+    width: 95%;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

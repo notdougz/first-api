@@ -1,4 +1,7 @@
+// app.js
+
 document.addEventListener('DOMContentLoaded', () => {
+    // ... (nenhuma mudança no topo do arquivo, até a função addTaskForm) ...
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const showRegisterLink = document.getElementById('show-register');
@@ -140,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // *** LÓGICA PARA CLIQUES NA LISTA DE TAREFAS ***
+    // LÓGICA DE CLIQUES NA LISTA DE TAREFAS (ATUALIZADA)
     taskList.addEventListener('click', async (e) => {
         const target = e.target;
         const taskItem = target.closest('.task-item');
@@ -148,50 +151,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const taskId = taskItem.dataset.id;
         const token = localStorage.getItem('accessToken');
+        const isCompleted = taskItem.classList.contains('completed');
 
-        // Se o botão de deletar foi clicado
+        // Deletar tarefa
         if (target.classList.contains('delete-btn')) {
             try {
-                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                await fetch(`${API_URL}/tarefas/${taskId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                if (!response.ok) throw new Error('Falha ao deletar tarefa.');
-                await fetchTasks(); // Atualiza a lista
-            } catch (error) {
-                console.error(error.message);
-            }
+                await fetchTasks();
+            } catch (error) { console.error(error.message); }
         }
 
-        // Se o botão de concluir foi clicado
+        // Concluir tarefa
         if (target.classList.contains('complete-btn')) {
-            // Primeiro, pegamos os dados atuais da tarefa para poder enviar no PUT
-            const currentTitle = taskItem.querySelector('strong').textContent;
-            const currentDesc = taskItem.querySelector('p').textContent;
+            const currentTitle = taskItem.querySelector('.task-details strong').textContent;
+            const currentDesc = taskItem.querySelector('.task-details p').textContent;
+            try {
+                await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ titulo: currentTitle, descricao: currentDesc, concluida: true })
+                });
+                await fetchTasks();
+            } catch (error) { console.error(error.message); }
+        }
+
+        // *** NOVO: Entrar no modo de edição ***
+        if (target.classList.contains('edit-btn')) {
+            const taskDetails = taskItem.querySelector('.task-details');
+            const currentTitle = taskDetails.querySelector('strong').textContent;
+            const currentDesc = taskDetails.querySelector('p').textContent;
+
+            taskDetails.innerHTML = `
+                <input type="text" class="edit-title" value="${currentTitle}">
+                <input type="text" class="edit-desc" value="${currentDesc}">
+            `;
+            
+            target.textContent = 'Salvar';
+            target.classList.remove('edit-btn');
+            target.classList.add('save-btn');
+        }
+
+        // *** NOVO: Salvar a edição ***
+        else if (target.classList.contains('save-btn')) {
+            const newTitle = taskItem.querySelector('.edit-title').value;
+            const newDesc = taskItem.querySelector('.edit-desc').value;
             
             try {
-                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                await fetch(`${API_URL}/tarefas/${taskId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        titulo: currentTitle,
-                        descricao: currentDesc,
-                        concluida: true 
+                        titulo: newTitle,
+                        descricao: newDesc,
+                        concluida: isCompleted // Mantém o status original
                     })
                 });
-                if (!response.ok) throw new Error('Falha ao concluir tarefa.');
-                await fetchTasks(); // Atualiza a lista
-            } catch (error) {
-                console.error(error.message);
-            }
+                await fetchTasks();
+            } catch (error) { console.error(error.message); }
         }
     });
 
 
     async function fetchTasks() {
+        //... (função sem alterações)
         const token = localStorage.getItem('accessToken');
         if (!token) {
             logoutButton.click();
@@ -220,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // *** FUNÇÃO PARA MOSTRAR OS BOTÕES ***
+    // FUNÇÃO DISPLAY ATUALIZADA COM O BOTÃO "EDITAR"
     function displayTasks(tasks) {
         taskList.innerHTML = '';
         
@@ -232,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.forEach(task => {
             const li = document.createElement('li');
             li.className = 'task-item';
-            // Adiciona a classe 'completed' se a tarefa estiver concluída
             if (task.concluida) {
                 li.classList.add('completed');
             }
@@ -246,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="task-actions">
                     <span class="status">${task.concluida ? 'Concluída' : 'Pendente'}</span>
                     ${!task.concluida ? '<button class="complete-btn">Concluir</button>' : ''}
+                    <button class="edit-btn">Editar</button>
                     <button class="delete-btn">Deletar</button>
                 </div>
             `;
