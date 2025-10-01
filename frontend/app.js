@@ -253,34 +253,34 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // FUNÇÃO DISPLAY ATUALIZADA COM O BOTÃO "EDITAR"
     function displayTasks(tasks) {
-        taskList.innerHTML = '';
-        
-        if (tasks.length === 0) {
-            taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
-            return;
+    taskList.innerHTML = '';
+    
+    if (tasks.length === 0) {
+        taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
+        return;
+    }
+
+    tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        if (task.concluida) {
+            li.classList.add('completed');
         }
+        li.dataset.id = task.id;
 
-        tasks.forEach(task => {
-            const li = document.createElement('li');
-            li.className = 'task-item';
-            if (task.concluida) {
-                li.classList.add('completed');
-            }
-            li.dataset.id = task.id;
-
-            li.innerHTML = `
-                <div class="task-details">
-                    <strong>${task.titulo}</strong>
-                    <p>${task.descricao || ''}</p>
-                </div>
-                <div class="task-actions">
-                    <span class="status">${task.concluida ? 'Concluída' : 'Pendente'}</span>
-                    ${!task.concluida ? '<button class="complete-btn">Concluir</button>' : ''}
-                    <button class="edit-btn">Editar</button>
-                    <button class="delete-btn">Deletar</button>
-                </div>
-            `;
-            taskList.appendChild(li);
-        });
+        // HTML atualizado com ícones
+        li.innerHTML = `
+            <div class="task-details">
+                <strong>${task.titulo}</strong>
+                <p>${task.descricao || ''}</p>
+            </div>
+            <div class="task-actions">
+                ${!task.concluida ? '<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>' : ''}
+                <button class="edit-btn" title="Editar"><i class="fas fa-pencil-alt"></i></button>
+                <button class="delete-btn" title="Deletar"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+        taskList.appendChild(li);
+    });
     }
 });
