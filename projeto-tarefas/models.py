@@ -1,13 +1,12 @@
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
-
 class Usuario(Base):
     __tablename__ = "usuarios"
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
-    senha_hash = Column(String) # NUNCA guardamos a senha em texto!
+    senha_hash = Column(String)
 
     # Esta linha cria a relação: um utilizador pode ter muitas tarefas.
     tarefas = relationship("Tarefa", back_populates="dono")

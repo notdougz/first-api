@@ -1,10 +1,7 @@
-# tests/test_main.py
-
 import pytest
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
-
 from main import app, get_db
 from models import Base
 from tests.test_database import TestingSessionLocal, engine
@@ -85,7 +82,6 @@ async def test_login_senha_incorreta(client: AsyncClient):
     assert response.status_code == 401
     assert response.json() == {"detail": "Email ou senha incorretos"}
 
-# --- NOVOS TESTES PARA AS TAREFAS PROTEGIDAS ---
 @pytest.mark.asyncio
 async def test_criar_e_listar_tarefas_autenticado(client: AsyncClient):
     # 1. Criar e fazer login do utilizador
@@ -141,7 +137,7 @@ async def test_utilizador_nao_pode_ver_tarefa_de_outro(client: AsyncClient):
 
     # Utilizador B tenta aceder à tarefa do Utilizador A
     response_b_get = await client.get(f"/tarefas/{tarefa_a_id}", headers=headers_b)
-    # CORREÇÃO: A API corretamente retorna 403 Forbidden
+    # A API corretamente retorna 403 Forbidden
     assert response_b_get.status_code == 403
     
 @pytest.mark.asyncio

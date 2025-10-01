@@ -47,7 +47,7 @@ async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCre
         titulo=tarefa.titulo,
         descricao=tarefa.descricao,
         concluida=tarefa.concluida,
-        dono_id=dono_id  # <-- AQUI ESTÁ A CORREÇÃO PRINCIPAL
+        dono_id=dono_id
     )
     # 2. Adiciona o objeto à sessão do banco de dados.
     db.add(db_tarefa)

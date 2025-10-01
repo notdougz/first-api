@@ -1,5 +1,3 @@
-# Mude para este código em schemas.py
-
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 

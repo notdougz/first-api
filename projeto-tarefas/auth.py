@@ -7,7 +7,6 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-# APAGUE a linha 'import crud' daqui
 from database import SessionLocal
 
 # --- Configuração de Segurança ---
@@ -43,7 +42,6 @@ async def get_db():
 
 # A nossa "guarda de segurança"
 async def get_usuario_atual(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
-    # --- ADICIONE A IMPORTAÇÃO AQUI DENTRO ---
     import crud
     
     credentials_exception = HTTPException(
