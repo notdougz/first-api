@@ -143,3 +143,110 @@ async def test_utilizador_nao_pode_ver_tarefa_de_outro(client: AsyncClient):
     response_b_get = await client.get(f"/tarefas/{tarefa_a_id}", headers=headers_b)
     # CORREÇÃO: A API corretamente retorna 403 Forbidden
     assert response_b_get.status_code == 403
+    
+@pytest.mark.asyncio
+async def test_atualizar_tarefa_sucesso(client: AsyncClient):
+    # 1. Criar usuário e fazer login
+    await client.post("/usuarios/", json={"email": "user_update@exemplo.com", "senha": "123"})
+    login_res = await client.post("/login", data={"username": "user_update@exemplo.com", "password": "123"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 2. Criar a tarefa que será atualizada
+    tarefa_original = {"titulo": "Título Antigo", "descricao": "Descrição Antiga"}
+    criar_res = await client.post("/tarefas/", json=tarefa_original, headers=headers)
+    tarefa_id = criar_res.json()["id"]
+    
+    # 3. Atualizar a tarefa
+    dados_atualizados = {"titulo": "Título Novo!", "descricao": "Descrição Nova!", "concluida": True}
+    update_res = await client.put(f"/tarefas/{tarefa_id}", json=dados_atualizados, headers=headers)
+    
+    # 4. Verificar a resposta imediata da atualização
+    assert update_res.status_code == 200
+    data = update_res.json()
+    assert data["titulo"] == "Título Novo!"
+    assert data["concluida"] is True
+
+    # 5. Buscar a tarefa novamente no banco para garantir que a mudança foi salva
+    response_get_depois = await client.get(f"/tarefas/{tarefa_id}", headers=headers)
+    assert response_get_depois.status_code == 200
+    dados_do_banco = response_get_depois.json()
+    assert dados_do_banco["titulo"] == "Título Novo!"
+    assert dados_do_banco["descricao"] == "Descrição Nova!"
+    assert dados_do_banco["concluida"] is True
+    
+@pytest.mark.asyncio
+async def test_deletar_tarefa_sucesso(client: AsyncClient):
+    # 1. Criar usuário e fazer login
+    await client.post("/usuarios/", json={"email": "user_delete@exemplo.com", "senha": "123"})
+    login_res = await client.post("/login", data={"username": "user_delete@exemplo.com", "password": "123"})
+    token = login_res.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 2. Criar a tarefa
+    tarefa_data = {"titulo": "Tarefa para deletar"}
+    criar_res = await client.post("/tarefas/", json=tarefa_data, headers=headers)
+    tarefa_id = criar_res.json()["id"]
+
+    # 3. Deletar a tarefa
+    delete_res = await client.delete(f"/tarefas/{tarefa_id}", headers=headers)
+    assert delete_res.status_code == 200
+
+    # 4. Verificar se a tarefa não existe mais (deve retornar 404)
+    get_res = await client.get(f"/tarefas/{tarefa_id}", headers=headers)
+    assert get_res.status_code == 404
+    
+@pytest.mark.asyncio
+async def test_error_ao_atualizar_tarefa_de_outro_usuario(client: AsyncClient):
+    # Criar Utilizador A e sua tarefa
+    await client.post("/usuarios/", json={"email": "userA_err@exemplo.com", "senha": "123"})
+    login_a = await client.post("/login", data={"username": "userA_err@exemplo.com", "password": "123"})
+    headers_a = {"Authorization": f"Bearer {login_a.json()['access_token']}"}
+    tarefa_a_res = await client.post("/tarefas/", json={"titulo": "Tarefa do User A"}, headers=headers_a)
+    tarefa_a_id = tarefa_a_res.json()["id"]
+
+    # Criar Utilizador B
+    await client.post("/usuarios/", json={"email": "userB_err@exemplo.com", "senha": "456"})
+    login_b = await client.post("/login", data={"username": "userB_err@exemplo.com", "password": "456"})
+    headers_b = {"Authorization": f"Bearer {login_b.json()['access_token']}"}
+
+    # Utilizador B tenta atualizar a tarefa do Utilizador A
+    response_put = await client.put(f"/tarefas/{tarefa_a_id}", json={"titulo": "invadido"}, headers=headers_b)
+    assert response_put.status_code == 403
+
+@pytest.mark.asyncio
+async def test_acoes_em_tarefa_inexistente_retorna_404(client: AsyncClient):
+    # 1. Fazer login para ter um token válido
+    await client.post("/usuarios/", json={"email": "user_404@exemplo.com", "senha": "123"})
+    login_res = await client.post("/login", data={"username": "user_404@exemplo.com", "password": "123"})
+    headers = {"Authorization": f"Bearer {login_res.json()['access_token']}"}
+    
+    id_inexistente = 99999
+
+    # 2. Tentar obter, atualizar e deletar uma tarefa que não existe
+    response_get = await client.get(f"/tarefas/{id_inexistente}", headers=headers)
+    assert response_get.status_code == 404
+
+    response_put = await client.put(f"/tarefas/{id_inexistente}", json={"titulo": "novo"}, headers=headers)
+    assert response_put.status_code == 404
+
+    response_delete = await client.delete(f"/tarefas/{id_inexistente}", headers=headers)
+    assert response_delete.status_code == 404
+    
+@pytest.mark.asyncio
+async def test_error_ao_deletar_tarefa_de_outro_usuario(client: AsyncClient):
+    # Criar Utilizador A e sua tarefa
+    await client.post("/usuarios/", json={"email": "userA_del_err@exemplo.com", "senha": "123"})
+    login_a = await client.post("/login", data={"username": "userA_del_err@exemplo.com", "password": "123"})
+    headers_a = {"Authorization": f"Bearer {login_a.json()['access_token']}"}
+    tarefa_a_res = await client.post("/tarefas/", json={"titulo": "Tarefa do User A"}, headers=headers_a)
+    tarefa_a_id = tarefa_a_res.json()["id"]
+
+    # Criar Utilizador B
+    await client.post("/usuarios/", json={"email": "userB_del_err@exemplo.com", "senha": "456"})
+    login_b = await client.post("/login", data={"username": "userB_del_err@exemplo.com", "password": "456"})
+    headers_b = {"Authorization": f"Bearer {login_b.json()['access_token']}"}
+
+    # Utilizador B tenta deletar a tarefa do Utilizador A
+    response_delete = await client.delete(f"/tarefas/{tarefa_a_id}", headers=headers_b)
+    assert response_delete.status_code == 403
