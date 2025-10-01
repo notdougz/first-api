@@ -45,7 +45,7 @@ async def test_criar_usuario_sucesso(client: AsyncClient):
         json={"email": "teste@exemplo.com", "senha": "senha123"},
     )
     data = response.json()
-    # CORREÇÃO: O status code para criação é 201
+    # O status code para criação é 201
     assert response.status_code == 201
     assert data["email"] == "teste@exemplo.com"
     assert "id" in data
@@ -137,7 +137,6 @@ async def test_utilizador_nao_pode_ver_tarefa_de_outro(client: AsyncClient):
 
     # Utilizador B tenta aceder à tarefa do Utilizador A
     response_b_get = await client.get(f"/tarefas/{tarefa_a_id}", headers=headers_b)
-    # A API corretamente retorna 403 Forbidden
     assert response_b_get.status_code == 403
     
 @pytest.mark.asyncio

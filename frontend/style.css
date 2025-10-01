@@ -1,5 +1,3 @@
-/* style.css (Com suporte para Tema Claro e Escuro) */
-
 /* ===== Tema Claro (Padrão) ===== */
 :root {
     --primary-color: #4f46e5;
@@ -182,25 +180,25 @@ header {
 
 /* Estilo do botão de tema movido para uma posição fixa */
 #theme-toggle-button {
-    position: fixed; /* Fica fixo na tela mesmo com rolagem */
+    position: fixed; 
     top: 20px;
     right: 20px;
     background-color: var(--background-item);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    width: 45px;  /* Largura e altura para um círculo perfeito */
+    width: 45px;  
     height: 45px;
-    border-radius: 50%; /* Deixa o botão redondo */
+    border-radius: 50%;
     font-size: 1.1em;
-    z-index: 1000; /* Garante que ele fique acima de outros elementos */
-    padding: 0; /* Remove padding extra */
+    z-index: 1000; 
+    padding: 0; 
 }
 
 /* Remove a borda anterior que era aplicada a ele no cabeçalho */
 .header-buttons #theme-toggle-button {
     border: none;
     padding: 8px 12px;
-    position: static; /* Reseta o posicionamento se estiver no header */
+    position: static;
     width: auto;
     height: auto;
     border-radius: 8px;

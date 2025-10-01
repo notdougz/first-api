@@ -1,7 +1,5 @@
-// app.js
-
 /**
- * Este evento garante que o nosso código JavaScript só vai rodar
+ * Garante que o código JavaScript só vai rodar
  * depois que toda a página HTML for carregada e estiver pronta.
  */
 document.addEventListener('DOMContentLoaded', () => {
