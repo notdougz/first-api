@@ -29,6 +29,4 @@ class UsuarioCreate(UsuarioBase):
 
 class Usuario(UsuarioBase):
     id: int
-    
-    # CORREÇÃO: Usando ConfigDict em vez de class Config
     model_config = ConfigDict(from_attributes=True)
