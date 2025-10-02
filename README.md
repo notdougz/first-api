@@ -1,198 +1,132 @@
-# API de Gerenciamento de Tarefas
+# 📋 Gerenciador de Tarefas - Projeto de Aprendizagem
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-green?style=flat-square&logo=fastapi)
-![SQLite](https://img.shields.io/badge/SQLite-3-blue?style=flat-square&logo=sqlite)
+![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green?style=flat-square&logo=fastapi)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue?style=flat-square&logo=docker)
 
-## 📝 Sobre o Projeto
+## 🎯 Sobre o Projeto
 
-API REST desenvolvida com FastAPI para gerenciar uma lista de tarefas (To-Do list). Cada usuário tem suas próprias tarefas privadas, protegidas por autenticação JWT.
+Este é um projeto **full-stack** que desenvolvi para aprender e praticar tecnologias modernas de desenvolvimento web. É uma aplicação completa de gerenciamento de tarefas com autenticação de usuários.
 
-**Principais recursos:**
-- Sistema de autenticação completo (registro, login, JWT)
-- CRUD completo de tarefas (criar, ler, atualizar, deletar)
-- Banco de dados SQLite com SQLAlchemy
-- Cada usuário só acessa suas próprias tarefas
-- Documentação automática da API
+### 🚀 O que aprendi construindo este projeto:
 
-## 🚀 Como Executar
+- **Backend**: API REST com FastAPI, autenticação JWT, ORM com SQLAlchemy
+- **Frontend**: Interface responsiva com JavaScript vanilla e CSS moderno
+- **DevOps**: Containerização com Docker e Docker Compose
+- **Testes**: Testes automatizados com Pytest
+- **Segurança**: Hash de senhas, tokens JWT, isolamento de dados por usuário
 
-### Pré-requisitos
-- Python 3.8+
-- pip
+## ⚡ Execução Rápida com Docker
 
-### Instalação
+### Opção 1: Docker Compose (Recomendado)
 
-1. **Clone o repositório:**
 ```bash
+# Clone o projeto
 git clone https://github.com/notdougz/first-api.git
-cd first-api/projeto-tarefas
+cd first-api
+
+# Execute tudo com um comando
+docker-compose up --build
 ```
 
-2. **Crie o ambiente virtual:**
-```bash
-# Windows
-python -m venv .venv
-.\.venv\Scripts\Activate
+**Pronto!** Acesse:
 
-# Linux/macOS
-python -m venv .venv
-source .venv/bin/activate
-```
+- 🌐 **Frontend**: http://localhost:8080
+- 🔧 **API**: http://localhost:8000
+- 📚 **Documentação**: http://localhost:8000/docs
 
-3. **Instale as dependências:**
+### Opção 2: Execução Local (Desenvolvimento)
+
 ```bash
+cd projeto-tarefas
+
+# Instale as dependências
 pip install -r requirements.txt
-```
 
-4. **Configure as variáveis de ambiente:**
-
-Crie um arquivo `.env` na raiz do projeto:
-```env
-SECRET_KEY=sua_chave_secreta_aqui
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
-
-> 💡 **Gere uma SECRET_KEY segura com:**
-> ```bash
-> python -c "import secrets; print(secrets.token_urlsafe(32))"
-> ```
-
-5. **Execute a API:**
-```bash
+# Execute a API
 uvicorn main:app --reload
 ```
 
-6. **Acesse:**
-- API: `http://127.0.0.1:8000`
-- Documentação: `http://127.0.0.1:8000/docs`
+## 🛠️ Funcionalidades
 
-## 📚 Endpoints da API
+### Frontend (Interface Web)
 
-| Método | Endpoint | Descrição | Requer Auth |
-|--------|----------|-----------|-------------|
-| `POST` | `/usuarios/` | Registrar novo usuário | ❌ |
-| `POST` | `/login` | Fazer login e obter token | ❌ |
-| `POST` | `/tarefas/` | Criar tarefa | ✅ |
-| `GET` | `/tarefas/` | Listar minhas tarefas | ✅ |
-| `GET` | `/tarefas/{id}` | Ver tarefa específica | ✅ |
-| `PUT` | `/tarefas/{id}` | Atualizar tarefa | ✅ |
-| `DELETE` | `/tarefas/{id}` | Deletar tarefa | ✅ |
+- ✅ **Autenticação**: Login e registro de usuários
+- ✅ **CRUD de Tarefas**: Criar, visualizar, editar e excluir tarefas
+- ✅ **Interface Responsiva**: Design moderno que funciona em desktop e mobile
+- ✅ **Tema Escuro/Claro**: Alternância de temas
+- ✅ **Feedback Visual**: Mensagens de sucesso e erro
 
-## 🔧 Como Usar
+### Backend (API REST)
 
-### 1. Registrar usuário
-```bash
-curl -X POST "http://127.0.0.1:8000/usuarios/" \
-  -H "Content-Type: application/json" \
-  -d '{"email": "seu@email.com", "senha": "sua_senha"}'
-```
-
-### 2. Fazer login
-```bash
-curl -X POST "http://127.0.0.1:8000/login" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=seu@email.com&password=sua_senha"
-```
-
-**Resposta:**
-```json
-{
-  "access_token": "eyJhbGc...",
-  "token_type": "bearer"
-}
-```
-
-### 3. Criar tarefa (use o token obtido)
-```bash
-curl -X POST "http://127.0.0.1:8000/tarefas/" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
-  -d '{"titulo": "Estudar FastAPI", "descricao": "Aprender sobre APIs", "concluida": false}'
-```
-
-### 4. Listar tarefas
-```bash
-curl -X GET "http://127.0.0.1:8000/tarefas/" \
-  -H "Authorization: Bearer SEU_TOKEN_AQUI"
-```
-
-## 🏗️ Estrutura do Projeto
-
-```
-projeto-tarefas/
-│
-├── main.py              # Aplicação principal e rotas
-├── database.py          # Configuração do banco de dados
-├── models.py            # Modelos SQLAlchemy (tabelas)
-├── schemas.py           # Validação de dados (Pydantic)
-├── crud.py              # Operações no banco de dados
-├── auth.py              # Autenticação e segurança
-├── .env                 # Variáveis de ambiente
-├── .gitignore           # Arquivos ignorados pelo Git
-├── requirements.txt     # Dependências do projeto
-├── tarefas.db           # Banco de dados (criado automaticamente)
-└── tests/               # Testes automatizados
-    ├── __init__.py
-    ├── test_database.py
-    └── test_main.py
-```
+- ✅ **Autenticação JWT**: Tokens seguros para autenticação
+- ✅ **Banco de Dados**: SQLite com SQLAlchemy (async)
+- ✅ **Validação**: Pydantic para validação automática de dados
+- ✅ **Documentação**: Swagger UI automática
+- ✅ **Testes**: Cobertura de testes com Pytest
 
 ## 🧪 Executar Testes
 
 ```bash
+cd projeto-tarefas
 pytest
 ```
 
-## 🔒 Segurança
+## 🏗️ Arquitetura do Projeto
 
-- ✅ Senhas criptografadas com bcrypt
-- ✅ Autenticação JWT com tokens de acesso
-- ✅ Isolamento de dados por usuário
-- ✅ Validação automática de dados
-- ✅ SECRET_KEY em variável de ambiente
+```
+first-api/
+├── 🐳 docker-compose.yml    # Orquestração dos containers
+├── 📁 projeto-tarefas/      # Backend (FastAPI)
+│   ├── main.py              # Rotas da API
+│   ├── models.py            # Modelos do banco de dados
+│   ├── auth.py              # Sistema de autenticação
+│   ├── crud.py              # Operações no banco
+│   └── tests/               # Testes automatizados
+└── 📁 frontend/             # Frontend (HTML/CSS/JS)
+    ├── index.html           # Interface principal
+    ├── app.js               # Lógica do frontend
+    └── style.css            # Estilos responsivos
+```
 
-## 💻 Tecnologias
+## 💻 Stack Tecnológica
 
-- **FastAPI** - Framework web moderno e rápido
-- **SQLAlchemy** - ORM para banco de dados
+### Backend
+
+- **FastAPI** - Framework web async/await
+- **SQLAlchemy** - ORM com suporte async
 - **SQLite** - Banco de dados leve
-- **JWT** - Autenticação segura
-- **Pydantic** - Validação de dados
+- **JWT** - Autenticação stateless
 - **Pytest** - Testes automatizados
 
-## 📖 Testar na Documentação Interativa
+### Frontend
 
-1. Acesse `http://127.0.0.1:8000/docs`
-2. Registre um usuário em `POST /usuarios/`
-3. Faça login em `POST /login` e copie o token
-4. Clique em **"Authorize"** no topo da página
-5. Cole o token e confirme
-6. Agora você pode testar todos os endpoints!
+- **HTML5/CSS3** - Estrutura e estilos
+- **JavaScript ES6+** - Interatividade
+- **Fetch API** - Comunicação com a API
 
-## 🎯 Próximas Melhorias
+### DevOps
 
-- [ ] Adicionar datas de criação/atualização
-- [ ] Implementar filtros (concluídas/pendentes)
-- [ ] Sistema de categorias/tags
-- [ ] Prioridades nas tarefas
-- [ ] Datas de vencimento
+- **Docker** - Containerização
+- **Docker Compose** - Orquestração multi-container
 
-## 👤 Autor
+## 🎓 Aprendizados Principais
+
+Durante o desenvolvimento deste projeto, pratiquei conceitos importantes como:
+
+- **APIs RESTful** e padrões HTTP
+- **Autenticação JWT** e segurança web
+- **Programação assíncrona** com Python
+- **Containerização** e deploy com Docker
+- **Testes automatizados** e TDD
+- **Frontend responsivo** sem frameworks
+
+## 👤 Desenvolvedor
 
 **Douglas** - [@notdougz](https://github.com/notdougz)
 
-## 📄 Licença
-
-Projeto de código aberto para fins educacionais.
+_Projeto desenvolvido como parte do meu aprendizado em desenvolvimento full-stack_
 
 ---
 
-⭐ Se este projeto te ajudou, considere dar uma estrela!
-
-## 📚 Recursos de Aprendizagem
-
-- [Documentação FastAPI](https://fastapi.tiangolo.com/)
-- [Tutorial JWT](https://jwt.io/introduction)
-- [SQLAlchemy](https://docs.sqlalchemy.org/)
+⭐ **Gostou do projeto?** Deixe uma estrela para apoiar meu aprendizado!
