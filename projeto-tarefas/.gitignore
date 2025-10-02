@@ -1,12 +1,32 @@
 # Ambiente Virtual
+# Impede que toda a pasta do ambiente virtual seja enviada para o repositório.
+.venv/
 venv/
+env/
 
-# Arquivos de cache do Python
+# Arquivos de cache e compilados do Python
+# Gerados automaticamente pelo Python e não são necessários no repositório.
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Cache de Testes
+# Pasta gerada pelo Pytest.
+.pytest_cache/
 
 # Banco de dados local
-tarefas.db
+# O banco de dados SQLite não deve ser versionado, especialmente em produção.
+*.db
+*.sqlite3
 
-# Ficheiro de variáveis de ambiente com segredos
+# Ficheiro de variáveis de ambiente
 .env
+
+# Arquivos de configuração de IDEs e editores
+.vscode/
+.idea/
+
+# Arquivos gerados pelo sistema operacional
+.DS_Store
+Thumbs.db
