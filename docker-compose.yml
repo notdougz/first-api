@@ -1,0 +1,30 @@
+# Define a versão do Docker Compose que estamos a usar.
+version: '3.8'
+
+# 'services' é onde definimos os nossos containers.
+services:
+  # 1. O serviço do Back-end (API)
+  backend:
+    build: ./projeto-tarefas  # Diz ao Compose para construir a imagem a partir do Dockerfile na pasta ./projeto-tarefas
+    image: tarefas-api         # Nomeia a imagem que será construída
+    container_name: container-api # Nomeia o container que será executado
+    volumes:
+      # O "volume" mapeia a pasta local para a pasta dentro do container.
+      # Se alterarmos o código da API, ele reflete automaticamente dentro do container sem precisar reconstruir a imagem.
+      - ./projeto-tarefas:/app
+    ports:
+      # Mapeia a porta 8000 da sua máquina para a porta 8000 do container da API.
+      - "8000:8000"
+
+  # 2. O serviço do Front-end
+  frontend:
+    build: ./frontend          # Constrói a imagem a partir do Dockerfile em ./frontend
+    image: tarefas-frontend    # Nomeia a imagem
+    container_name: container-frontend # Nomeia o container
+    ports:
+      # Mapeia a porta 8080 da sua máquina para a porta 80 do container do Nginx.
+      # Usamos 8080 para não haver conflito com a porta 8000 da API.
+      - "8080:80"
+    # 'depends_on' garante que o container do backend inicie antes do frontend.
+    depends_on:
+      - backend

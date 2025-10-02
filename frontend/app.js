@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuração da API ---
     // URL base do nosso backend FastAPI
-    const API_URL = 'http://127.0.0.1:8000';
+    const API_URL = 'http://localhost:8000';
 
 
     // --- Gerenciamento do Tema (Modo Noturno) ---
