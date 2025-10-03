@@ -15,8 +15,8 @@ app = FastAPI(lifespan=lifespan)
 
 # Permite CORS para todas as origens
 origins = [
-    "https://frontend-production-c08e.up.railway.app",  # O URL do seu frontend
-    "http://localhost:8080",  # Para desenvolvimento local
+    "https://frontend-production-c08e.up.railway.app",
+    "http://localhost:8080",
 ]
 
 app.add_middleware(
