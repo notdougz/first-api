@@ -8,6 +8,8 @@ import models
 import schemas
 from auth import criar_token_de_acesso, get_usuario_atual, verificar_senha, get_db
 from database import lifespan
+import os
+from datetime import datetime
 
 app = FastAPI(lifespan=lifespan)
 
@@ -23,6 +25,16 @@ app.add_middleware(
 @app.get("/", tags=["Geral"])
 def read_root():
     return {"message": "Bem-vindo à API de Gerenciamento de Tarefas!"}
+
+@app.get("/health", tags=["Geral"])
+async def health_check():
+    """Endpoint para verificar a saúde da aplicação"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0",
+        "environment": os.getenv("ENVIRONMENT", "development")
+    }
 
 @app.post("/usuarios/", response_model=schemas.Usuario, status_code=status.HTTP_201_CREATED, tags=["Utilizadores"])
 async def criar_usuario(usuario: schemas.UsuarioCreate, db: AsyncSession = Depends(get_db)):
