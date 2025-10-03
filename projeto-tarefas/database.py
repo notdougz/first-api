@@ -11,15 +11,12 @@ load_dotenv()
 # Usa a DATABASE_URL do ambiente, com um fallback para o SQLite local
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./tarefas.db")
 
-# Lógica para substituir 'postgres://' por 'postgresql://' se necessário,
-# pois algumas plataformas (como Heroku/Railway) usam o primeiro formato.
+# Lógica para garantir que o driver asyncpg seja usado com PostgreSQL
 if SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
-    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL
-    # A linha abaixo só é necessária para SQLite
-    # connect_args={"check_same_thread": False}
 )
 
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine)
