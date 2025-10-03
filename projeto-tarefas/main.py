@@ -14,12 +14,17 @@ from datetime import datetime
 app = FastAPI(lifespan=lifespan)
 
 # Permite CORS para todas as origens
+origins = [
+    "https://frontend-production-c08e.up.railway.app",  # O URL do seu frontend
+    "http://localhost:8080",  # Para desenvolvimento local
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/", tags=["Geral"])
