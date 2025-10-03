@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from database import SessionLocal
+from .database import SessionLocal
 
 # --- Configuração de Segurança ---
 load_dotenv()
@@ -42,7 +42,7 @@ async def get_db():
 
 # A nossa "guarda de segurança"
 async def get_usuario_atual(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
-    import crud
+    from . import crud
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

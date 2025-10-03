@@ -3,11 +3,11 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
-import crud
-import models
-import schemas
-from auth import criar_token_de_acesso, get_usuario_atual, verificar_senha, get_db
-from database import lifespan
+from .import crud
+from .import models
+from .import schemas
+from .auth import criar_token_de_acesso, get_usuario_atual, verificar_senha, get_db
+from .database import lifespan
 import os
 from datetime import datetime
 
