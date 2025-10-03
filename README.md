@@ -15,9 +15,9 @@ Aplicação full‑stack de gerenciamento de tarefas com autenticação JWT, foc
 
 #### 👀 Prévia visual
 
-![Tela de Login](login.png)
+![Tela de Login](assets/login.png)
 
-![Minhas Tarefas](tarefas.png)
+![Minhas Tarefas](assets/tarefas.png)
 
 ## 🎯 Visão Geral
 
