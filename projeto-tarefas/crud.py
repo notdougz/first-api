@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from . import models
-from . import schemas
-from .auth import pwd_context
+import models
+import schemas
+from auth import pwd_context
 
 async def get_tarefa(db: AsyncSession, tarefa_id: int):
     """

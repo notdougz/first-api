@@ -26,7 +26,7 @@ SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine
 Base = declarative_base()
 
 async def create_tables():
-    from . import models 
+    import models 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
