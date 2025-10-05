@@ -123,3 +123,9 @@ async def deletar_tarefa(
     if db_tarefa.dono_id != usuario_atual.id:
         raise HTTPException(status_code=403, detail="Não tem permissão para deletar esta tarefa")
     return await crud.delete_tarefa(db=db, tarefa_id=tarefa_id)
+
+if __name__ == "__main__":
+    import os
+    import uvicorn
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
