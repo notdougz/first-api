@@ -373,7 +373,7 @@ header {
     #tasks-page-container {
         flex-direction: column; 
         align-items: stretch;
-        padding: 1em;
+        padding: 1.5em;
     }
 
     #form-card {
@@ -381,12 +381,11 @@ header {
         width: 100%;
         position: static; 
     }
-}
-
-.task-toolbar {
-    flex-direction: column; /* Coloca os filtros em cima da ordenação */
-    align-items: stretch; /* Faz os itens ocuparem a largura total */
-    gap: 1.5em; /* Aumenta o espaço vertical entre eles */
+    
+    .form-row input[type="date"],
+    .form-row select {
+        font-size: 0.8em; /* Reduz o tamanho da fonte */
+    }
 }
 
 .sort-options {
