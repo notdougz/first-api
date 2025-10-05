@@ -384,6 +384,16 @@ header {
 }
 
 .task-toolbar {
+    flex-direction: column; /* Coloca os filtros em cima da ordenação */
+    align-items: stretch; /* Faz os itens ocuparem a largura total */
+    gap: 1.5em; /* Aumenta o espaço vertical entre eles */
+}
+
+.sort-options {
+    justify-content: space-between; /* Alinha o texto e o seletor */
+}
+
+.task-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
