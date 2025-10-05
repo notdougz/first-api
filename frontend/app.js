@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuração da API ---
     // URL base do nosso backend FastAPI
-    const API_URL = 'http://localhost:8000';
+    const API_URL = 'https://web-production-889f.up.railway.app';
 
 
     // --- Gerenciamento do Tema (Modo Noturno) ---
