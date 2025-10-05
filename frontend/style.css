@@ -63,6 +63,7 @@ body.dark-mode {
     --priority-red-bg: rgba(248, 113, 113, 0.1);
     --priority-yellow-bg: rgba(251, 191, 36, 0.1);
     --priority-green-bg: rgba(74, 222, 128, 0.1);
+    background-image: none;
 
 }
 
@@ -88,6 +89,7 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
+    background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
 }
 
 /* ===== Container Principal ===== */
@@ -191,6 +193,17 @@ form button[type="submit"] {
 }
 form button[type="submit"]:hover {
     background-color: var(--primary-hover);
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.form-header i {
+    font-size: 4rem; /* Tamanho do ícone */
+    color: var(--primary-color);
+    opacity: 0.8;
 }
 
 /* ===== Cabeçalho do App e Lista de Tarefas ===== */

@@ -11,13 +11,20 @@
 <body>
     <div id="auth-container">
         <form id="login-form">
+            <div class="form-header">
+                <i class="fas fa-user-circle"></i>
+            </div>
             <h2>Login</h2>
             <input type="email" id="login-email" placeholder="Email" required>
             <input type="password" id="login-password" placeholder="Senha" required>
             <button type="submit">Entrar</button>
             <p>Não tem uma conta? <a href="#" id="show-register">Registre-se</a></p>
         </form>
+    
         <form id="register-form" class="hidden">
+            <div class="form-header">
+                <i class="fas fa-user-plus"></i>
+            </div>
             <h2>Registro</h2>
             <input type="email" id="register-email" placeholder="Email" required>
             <input type="password" id="register-password" placeholder="Senha" required>
