@@ -1,1 +1,1 @@
-web: uvicorn projeto-tarefas.main:app --host 0.0.0.0 --port $PORT
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
