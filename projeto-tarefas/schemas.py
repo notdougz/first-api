@@ -15,8 +15,8 @@ class TarefaBase(BaseModel):
     descricao: Optional[str] = None
     concluida: bool = False
     
-    data_vencimento: Optional[str] = None
-    concluida: bool = False
+    data_vencimento: Optional[date] = None
+    prioridade: Prioridade = Prioridade.verde
 
 # Schema para a CRIAÇÃO de uma Tarefa (o que a API recebe)
 class TarefaCreate(TarefaBase):

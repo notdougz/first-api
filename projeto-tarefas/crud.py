@@ -17,14 +17,11 @@ async def update_tarefa(db: AsyncSession, tarefa_id: int, tarefa: schemas.Tarefa
     """
     db_tarefa = await get_tarefa(db, tarefa_id=tarefa_id)
     if db_tarefa:
-        # Atualiza os campos do objeto com os novos dados
         db_tarefa.titulo = tarefa.titulo
         db_tarefa.descricao = tarefa.descricao
         db_tarefa.concluida = tarefa.concluida
         db_tarefa.data_vencimento = tarefa.data_vencimento
         db_tarefa.prioridade = tarefa.prioridade.value
-        
-        # Confirma as mudanças no banco
         await db.commit()
         await db.refresh(db_tarefa)
     return db_tarefa
@@ -44,14 +41,18 @@ async def create_tarefa_para_usuario(db: AsyncSession, tarefa: schemas.TarefaCre
     """
     Cria uma nova tarefa no banco de dados, associada a um utilizador.
     """
-    # 1. Cria um objeto do modelo SQLAlchemy a partir dos dados recebidos,
-    #    incluindo o ID do dono.
     db_tarefa = models.Tarefa(
         titulo=tarefa.titulo,
         descricao=tarefa.descricao,
         concluida=tarefa.concluida,
+        data_vencimento=tarefa.data_vencimento,
+        prioridade=tarefa.prioridade.value,
         dono_id=dono_id
     )
+    db.add(db_tarefa)
+    await db.commit()
+    await db.refresh(db_tarefa)
+    return db_tarefa
     # 2. Adiciona o objeto à sessão do banco de dados.
     db.add(db_tarefa)
     # 3. Confirma (salva) as mudanças no banco.
