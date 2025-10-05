@@ -60,9 +60,9 @@ body.dark-mode {
     --priority-green: #4ade80;
 
     /* Cores de fundo para prioridades no modo escuro */
-    --priority-red-bg: rgba(248, 113, 113, 0.1);
-    --priority-yellow-bg: rgba(251, 191, 36, 0.1);
-    --priority-green-bg: rgba(74, 222, 128, 0.1);
+    --priority-red-bg: #fee2e2;    /* Um rosa bem claro */
+    --priority-yellow-bg: #fef3c7; /* Um amarelo bem claro */
+    --priority-green-bg: #dcfce7;  /* Um verde bem claro */
     background-image: none;
 
 }
