@@ -9,7 +9,7 @@
     --success-color: #16a34a;
     --success-hover: #15803d;
 
-    --background-primary: #f3f4f6;
+    --background-primary: #e5e7eb;
     --background-secondary: #ffffff;
     --background-item: #f9fafb;
     --border-color: #d1d5db;
@@ -63,6 +63,12 @@ body.dark-mode {
     --priority-red-bg: rgba(248, 113, 113, 0.1);
     --priority-yellow-bg: rgba(251, 191, 36, 0.1);
     --priority-green-bg: rgba(74, 222, 128, 0.1);
+
+}
+
+body.dark-mode input[type="date"],
+body.dark-mode select {
+    color-scheme: dark;
 }
 
 
