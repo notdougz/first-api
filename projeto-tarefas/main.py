@@ -171,7 +171,6 @@ async def atualizar_tarefa(
     db: AsyncSession = Depends(get_db),
 ):
     """Atualiza o título, descrição ou status de uma tarefa existente."""
-    # A lógica aqui fica muito mais limpa
     return await crud.update_tarefa(db=db, db_tarefa=db_tarefa, tarefa_atualizada=tarefa_atualizada)
 
 
