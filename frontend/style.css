@@ -320,3 +320,53 @@ header {
 /* ===== Mensagens de Feedback ===== */
 .message { margin-top: 1em; text-align: center; font-weight: 500; }
 #auth-message { color: var(--danger-color); }
+
+/* Container geral que alinha o card e a lista de tarefas */
+#tasks-page-container {
+    display: flex;
+    align-items: flex-start; /* Alinha os itens no topo */
+    gap: 2em;
+    width: 100%;
+    max-width: 1400px;
+    padding: 2em;
+}
+
+/* O card da esquerda, que agora contém o header e o formulário */
+#form-card {
+    flex: 0 0 400px; /* Largura fixa de 400px */
+    background: var(--background-secondary);
+    padding: 2.5em;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    position: sticky; /* Efeito "grudento" ao rolar */
+    top: 2em; 
+}
+
+/* Ajustes no título "Adicionar Tarefa" dentro do novo card */
+.sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    font-size: 1.5rem;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* A área de tarefas da direita */
+.task-area {
+    flex-grow: 1; /* Ocupa todo o resto do espaço */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 992px) {
+    #tasks-page-container {
+        flex-direction: column; /* Colunas uma sobre a outra */
+        padding: 1em;
+    }
+
+    #form-card {
+        flex: 1;
+        width: 100%;
+        position: static; /* Remove o efeito "grudento" */
+    }
+}

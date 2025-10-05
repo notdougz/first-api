@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authMessage = document.getElementById('auth-message');
 
     // Elementos principais da aplicação
-    const appContainer = document.getElementById('app-container');
+    const appContainer = document.getElementById('tasks-page-container');
     const taskList = document.getElementById('task-list');
     const logoutButton = document.getElementById('logout-button');
     const addTaskForm = document.getElementById('add-task-form');

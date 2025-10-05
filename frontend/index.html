@@ -34,29 +34,39 @@
         <p id="auth-message" class="message"></p>
     </div>
 
-    <div id="app-container" class="hidden">
-        <header>
-            <h1>Minhas Tarefas</h1>
-            <button id="logout-button">Sair</button>
-        </header>
-        <form id="add-task-form">
-            <input type="text" id="task-title" placeholder="Título da tarefa" required>
-            <input type="text" id="task-description" placeholder="Descrição (opcional)">
-            
-            <div class="form-row">
-                <input type="date" id="task-due-date" title="Data de Vencimento">
-                <select id="task-priority" title="Prioridade">
-                    <option value="verde">Prioridade: Verde</option>
-                    <option value="amarela">Prioridade: Amarela</option>
-                    <option value="vermelha">Prioridade: Vermelha</option>
-                </select>
-            </div>
-            <button type="submit">Adicionar Tarefa</button>
-        </form>
-        <ul id="task-list"></ul>
-        <p id="app-message" class="message"></p>
-    </div>
-    <button id="theme-toggle-button" title="Alternar tema">
+    <div id="tasks-page-container" class="hidden">
+        
+        <div id="form-card">
+            <header>
+                <h1>Minhas Tarefas</h1>
+                <button id="logout-button">Sair</button>
+            </header>
+    
+            <main class="sidebar">
+                <form id="add-task-form">
+                    <h2>Adicionar Tarefa</h2>
+                    <input type="text" id="task-title" placeholder="Título da tarefa" required>
+                    <input type="text" id="task-description" placeholder="Descrição (opcional)">
+                    
+                    <div class="form-row">
+                        <input type="date" id="task-due-date" title="Data de Vencimento">
+                        <select id="task-priority" title="Prioridade">
+                            <option value="verde">Prioridade: Verde</option>
+                            <option value="amarela">Prioridade: Amarela</option>
+                            <option value="vermelha">Prioridade: Vermelha</option>
+                        </select>
+                    </div>
+                    <button type="submit">Adicionar Tarefa</button>
+                </form>
+            </main>
+            <p id="app-message" class="message"></p>
+        </div>
+    
+        <div class="task-area">
+            <ul id="task-list"></ul>
+        </div>
+
+    </div> <button id="theme-toggle-button" title="Alternar tema">
         <i class="fas fa-moon"></i>
     </button>
     <script src="app.js"></script>
