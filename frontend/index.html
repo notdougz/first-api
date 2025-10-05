@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-
     <link rel="stylesheet" href="style.css">
-</head>
 </head>
 <body>
     <div id="auth-container">
@@ -21,7 +17,6 @@
             <button type="submit">Entrar</button>
             <p>Não tem uma conta? <a href="#" id="show-register">Registre-se</a></p>
         </form>
-
         <form id="register-form" class="hidden">
             <h2>Registro</h2>
             <input type="email" id="register-email" placeholder="Email" required>
@@ -31,6 +26,7 @@
         </form>
         <p id="auth-message" class="message"></p>
     </div>
+
     <div id="app-container" class="hidden">
         <header>
             <h1>Minhas Tarefas</h1>
@@ -39,10 +35,18 @@
         <form id="add-task-form">
             <input type="text" id="task-title" placeholder="Título da tarefa" required>
             <input type="text" id="task-description" placeholder="Descrição (opcional)">
+            
+            <div class="form-row">
+                <input type="date" id="task-due-date" title="Data de Vencimento">
+                <select id="task-priority" title="Prioridade">
+                    <option value="verde">Prioridade: Verde</option>
+                    <option value="amarela">Prioridade: Amarela</option>
+                    <option value="vermelha">Prioridade: Vermelha</option>
+                </select>
+            </div>
             <button type="submit">Adicionar Tarefa</button>
         </form>
-        <ul id="task-list">
-            </ul>
+        <ul id="task-list"></ul>
         <p id="app-message" class="message"></p>
     </div>
     <button id="theme-toggle-button" title="Alternar tema">

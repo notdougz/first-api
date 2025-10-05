@@ -1,10 +1,21 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
+from datetime import date
+from enum import Enum
 
-# Schema base para a Tarefa (campos comuns)
+#Schema Enum para as prioridades
+class Prioridade(str, Enum):
+    vermelha = "vermelha"
+    amarela = "amarela"
+    verde = "verde"
+
+# Schema base para a Tarefa
 class TarefaBase(BaseModel):
     titulo: str
     descricao: Optional[str] = None
+    concluida: bool = False
+    
+    data_vencimento: Optional[str] = None
     concluida: bool = False
 
 # Schema para a CRIAÇÃO de uma Tarefa (o que a API recebe)

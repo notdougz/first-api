@@ -177,6 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const title = document.getElementById('task-title').value;
         const description = document.getElementById('task-description').value;
+        const dueDate = document.getElementById('task-due-date').value;
+        const priority = document.getElementById('task-priority').value;
         const token = localStorage.getItem('accessToken');
 
         try {
@@ -189,7 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     titulo: title,
                     descricao: description,
-                    concluida: false
+                    concluida: false,
+                    data_vencimento: dueDate || null, // Envia null se a data estiver vazia
+                    prioridade: priority
                 })
             });
 
@@ -335,15 +339,28 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.forEach(task => {
             const li = document.createElement('li');
             li.className = 'task-item';
+            
+            li.classList.add(`priority-${task.prioridade}`);
+
             if (task.concluida) {
                 li.classList.add('completed');
             }
             li.dataset.id = task.id;
 
+            let dueDate = '';
+            if (task.data_vencimento) {
+                // new Date() precisa de um ajuste de fuso horário, então adicionamos 'T00:00:00'
+                const date = new Date(task.data_vencimento + 'T00:00:00');
+                dueDate = `<span class="due-date"><i class="fas fa-calendar-alt"></i> ${date.toLocaleDateString('pt-BR')}</span>`;
+            }
+
             li.innerHTML = `
-                <div class="task-details">
-                    <strong>${task.titulo}</strong>
-                    <p>${task.descricao || ''}</p>
+                <div class="task-info">
+                    <div class="task-details">
+                        <strong>${task.titulo}</strong>
+                        <p>${task.descricao || ''}</p>
+                    </div>
+                    ${dueDate}
                 </div>
                 <div class="task-actions">
                     ${!task.concluida ? '<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>' : ''}

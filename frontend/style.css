@@ -20,6 +20,10 @@
     --font-family: 'Poppins', sans-serif;
 
     --shadow-color: rgba(0, 0, 0, 0.1);
+
+    --priority-red: #ef4444;
+    --priority-yellow: #f59e0b;
+    --priority-green: #22c55e;
 }
 
 /* ===== Tema Escuro (Ativado com a classe .dark-mode no body) ===== */
@@ -43,6 +47,10 @@ body.dark-mode {
     --white: #ffffff;
     
     --shadow-color: rgba(0, 0, 0, 0.2);
+
+    --priority-red: #f87171;
+    --priority-yellow: #fbbf24;
+    --priority-green: #4ade80;
 }
 
 
@@ -103,7 +111,21 @@ form {
     gap: 1em;
 }
 
-input[type="email"], input[type="password"], input[type="text"] {
+/* NOVO: Container para alinhar campos lado a lado */
+.form-row {
+    display: flex;
+    gap: 1em;
+}
+
+/* SELETOR UNIFICADO E CORRIGIDO para todos os campos do formulário */
+input[type="email"], 
+input[type="password"], 
+input[type="text"],
+input[type="date"],
+select {
+    /* Esta propriedade garante que os campos dentro do .form-row cresçam e ocupem o espaço por igual */
+    flex-grow: 1; 
+    
     padding: 12px 15px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -111,12 +133,17 @@ input[type="email"], input[type="password"], input[type="text"] {
     font-family: var(--font-family);
     background-color: var(--background-primary);
     color: var(--text-primary);
+    /* Adicionado para um bug comum em alguns navegadores com flexbox */
+    min-width: 0; 
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 }
+
 input::placeholder {
     color: var(--text-secondary);
 }
-input:focus {
+
+input:focus,
+select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent);
@@ -242,7 +269,42 @@ header {
 .task-item.completed .task-details { text-decoration: line-through; }
 .task-item.completed .task-details strong { color: var(--text-secondary); }
 
+.task-item.priority-verde { border-left-color: var(--priority-green); }
+.task-item.priority-amarela { border-left-color: var(--priority-yellow); }
+.task-item.priority-vermelha { border-left-color: var(--priority-red); }
+
+.task-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+}
+
+.task-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    flex-grow: 1; /* Garante que o container ocupe o espaço disponível */
+}
+
+.task-details { flex-grow: 1; }
+.task-details strong { font-size: 1.1em; font-weight: 500; color: var(--text-primary); }
+.task-details p { margin: 0.2em 0 0; color: var(--text-secondary); font-size: 0.9em; }
+
+.due-date {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.task-item.completed .task-details { text-decoration: line-through; }
+.task-item.completed .task-details strong { color: var(--text-secondary); }
+
+
+
 /* Botões de Ação da Tarefa */
+.task-actions { display: flex; align-items: center; gap: 0.7em; flex-shrink: 0; }
+
 .task-actions { display: flex; align-items: center; gap: 0.7em; flex-shrink: 0; }
 
 .complete-btn, .delete-btn, .edit-btn, .save-btn { padding: 8px 12px; font-size: 0.85em; color: var(--white); }

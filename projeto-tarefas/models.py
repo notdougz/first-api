@@ -1,6 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import date
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -18,8 +19,7 @@ class Tarefa(Base):
     titulo = Column(String, index=True)
     descricao = Column(String, nullable=True)
     concluida = Column(Boolean, default=False)
-    # Esta é a chave estrangeira que liga a tarefa ao utilizador.
+    data_vencimento = Column(Date, nullable=True)
+    prioridade = Column(String, default="verde") 
     dono_id = Column(Integer, ForeignKey("usuarios.id"))
-
-    # Esta linha completa a relação com a tabela de utilizadores.
     dono = relationship("Usuario", back_populates="tarefas")

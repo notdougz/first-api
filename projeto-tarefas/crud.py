@@ -21,6 +21,9 @@ async def update_tarefa(db: AsyncSession, tarefa_id: int, tarefa: schemas.Tarefa
         db_tarefa.titulo = tarefa.titulo
         db_tarefa.descricao = tarefa.descricao
         db_tarefa.concluida = tarefa.concluida
+        db_tarefa.data_vencimento = tarefa.data_vencimento
+        db_tarefa.prioridade = tarefa.prioridade.value
+        
         # Confirma as mudanças no banco
         await db.commit()
         await db.refresh(db_tarefa)
