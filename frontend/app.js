@@ -25,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle-button');
     const themeIcon = themeToggleButton.querySelector('i');
 
+    // Elementos do seletor de filtros e ordenação
+    const filterButtonsContainer = document.querySelector('.filter-buttons');
+    const sortSelect = document.getElementById('sort-select');
+
     // --- Configuração da API ---
     // URL base do nosso backend FastAPI
     const API_URL = 'http://localhost:8000';
@@ -58,6 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', theme); // Salva a escolha
         });
     }
+
+
+    let allTasks = []; // Guarda a lista original de tarefas vinda da API
+    let currentFilter = 'all'; // 'all', 'pending', 'completed'
+    let currentSort = 'priority'; // 'priority', 'dueDate'
 
 
     // --- Inicialização da Aplicação ---
@@ -207,6 +216,23 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             document.getElementById('app-message').textContent = error.message;
         }
+    });
+
+    filterButtonsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
+            // Remove a classe 'active' de todos os botões
+            filterButtonsContainer.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            // Adiciona a classe 'active' ao botão clicado
+            e.target.classList.add('active');
+            
+            currentFilter = e.target.dataset.filter;
+            renderTasks(); // Re-renderiza a lista com o novo filtro
+        }
+    });
+
+    sortSelect.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        renderTasks(); // Re-renderiza a lista com a nova ordem
     });
 
     /**

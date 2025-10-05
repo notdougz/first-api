@@ -382,3 +382,51 @@ header {
         position: static; 
     }
 }
+
+.task-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5em;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5em;
+}
+
+.filter-btn {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+}
+
+.filter-btn:hover {
+    background-color: var(--background-item);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+}
+
+.sort-options label {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+}
+
+.sort-options select {
+    padding: 8px 12px;
+    max-width: 200px;
+}
