@@ -33,6 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // URL base do nosso backend FastAPI
     const API_URL = 'https://web-production-889f.up.railway.app';
 
+    const addTaskToggle = document.getElementById('add-task-toggle');
+    const addTaskFormContainer = document.querySelector('.sidebar');
+    
+    // Adiciona a classe 'collapsed' por defeito em ecrãs pequenos
+    if (window.matchMedia("(max-width: 992px)").matches) {
+        addTaskFormContainer.classList.add('collapsed');
+    }
+    
+    addTaskToggle.addEventListener('click', () => {
+        // A função só será executada em ecrãs pequenos
+        if (window.matchMedia("(max-width: 992px)").matches) {
+            addTaskFormContainer.classList.toggle('collapsed');
+        }
+    });      
+
 
     // --- Gerenciamento do Tema (Modo Noturno) ---
     /**
