@@ -336,6 +336,35 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const priorityOrder = {
+            'vermelha': 1,
+            'amarela': 2,
+            'verde': 3
+        };
+
+        tasks.sort((a, b) => {
+            const priorityA = priorityOrder[a.prioridade] || 99;
+            const priorityB = priorityOrder[b.prioridade] || 99;
+            
+            // Se a prioridade for diferente, ordena por ela
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB;
+            }
+
+            // Se a prioridade for igual, ordena pela data de vencimento (a mais próxima primeiro)
+            const dateA = a.data_vencimento ? new Date(a.data_vencimento) : null;
+            const dateB = b.data_vencimento ? new Date(b.data_vencimento) : null;
+
+            if (dateA && dateB) {
+                return dateA - dateB;
+            }
+            // Coloca tarefas com data antes daquelas sem data
+            if (dateA) return -1;
+            if (dateB) return 1;
+
+            return 0; // Mantém a ordem se tudo for igual
+        });
+
         tasks.forEach(task => {
             const li = document.createElement('li');
             li.className = 'task-item';
