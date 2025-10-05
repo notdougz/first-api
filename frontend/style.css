@@ -86,7 +86,7 @@ body {
     padding: 20px;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
-    background-image: linear-gradient(to top, #d299c2 0%, #fef9d7 100%);
+    background-image: linear-gradient(to top, #79a0eb 0%, #ffffff 100%);
     background-attachment: fixed;
 }
 
