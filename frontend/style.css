@@ -84,12 +84,10 @@ body {
     color: var(--text-primary);
     margin: 0;
     padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s ease, color 0.3s ease;
-    background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
+    background-image: linear-gradient(to top, #d299c2 0%, #fef9d7 100%);
+    background-attachment: fixed;
 }
 
 /* ===== Container Principal ===== */
@@ -381,7 +379,7 @@ header {
         width: 100%;
         position: static; 
     }
-    
+
     .form-row input[type="date"],
     .form-row select {
         font-size: 0.8em; /* Reduz o tamanho da fonte */
