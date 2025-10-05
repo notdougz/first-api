@@ -220,14 +220,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
         const taskId = taskItem.dataset.id;
         const token = localStorage.getItem('accessToken');
+        const isCompleted = taskItem.classList.contains('completed'); // Pega o status atual
     
-        // --- LÓGICA CORRIGIDA PARA COMPLETAR E DESFAZER TAREFAS ---
+        // --- LÓGICA CENTRALIZADA PARA COMPLETAR E DESFAZER TAREFAS ---
         if (target.closest('.complete-btn, .uncomplete-btn')) {
-            // Define se a tarefa será marcada como concluída (true) ou pendente (false)
             const newCompletedStatus = target.closest('.complete-btn') ? true : false;
     
             try {
-                // 1. Primeiro, busca os dados completos e atuais da tarefa na API.
+                // 1. Busca os dados atuais e completos da tarefa
                 const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -235,8 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const taskData = await response.json();
     
-                // 2. Agora, envia o objeto COMPLETO de volta, alterando apenas a propriedade "concluida".
-                // Isso preserva a prioridade, data e todos os outros campos.
+                // 2. Envia o objeto COMPLETO de volta, alterando apenas o status 'concluida'
                 await fetch(`${API_URL}/tarefas/${taskId}`, {
                     method: 'PUT',
                     headers: {
@@ -244,12 +243,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        ...taskData, // Copia todos os dados existentes (titulo, prioridade, data, etc.)
-                        concluida: newCompletedStatus // E sobrescreve apenas o status de conclusão
+                        ...taskData, 
+                        concluida: newCompletedStatus 
                     })
                 });
     
-                await fetchTasks(); // Atualiza a lista na tela
+                await fetchTasks();
             } catch (error) { console.error(error.message); }
         }
         
