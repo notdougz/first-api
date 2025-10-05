@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) { console.error(error.message); }
         }
         
-        // Ação de Deletar
+        // --- LÓGICA DE DELETAR ---
         if (target.closest('.delete-btn')) {
             try {
                 await fetch(`${API_URL}/tarefas/${taskId}`, {
@@ -262,30 +262,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 await fetchTasks();
             } catch (error) { console.error(error.message); }
         }
-
-        // Ação de Concluir
-        if (target.closest('.complete-btn')) {
-            const currentTitle = taskItem.querySelector('.task-details strong').textContent;
-            const currentDesc = taskItem.querySelector('.task-details p').textContent;
-            try {
-                await fetch(`${API_URL}/tarefas/${taskId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ titulo: currentTitle, descricao: currentDesc, concluida: true })
-                });
-                await fetchTasks();
-            } catch (error) { console.error(error.message); }
-        }
-
-        // Entrar no modo de Edição
+    
+        // --- LÓGICA DE EDIÇÃO ---
+        // (O bloco duplicado de "Concluir" foi removido daqui)
         if (target.closest('.edit-btn')) {
             const taskDetails = taskItem.querySelector('.task-details');
             const currentTitle = taskDetails.querySelector('strong').textContent;
             const currentDesc = taskDetails.querySelector('p').textContent;
-
+    
             taskDetails.innerHTML = `
                 <input type="text" class="edit-title" value="${currentTitle}">
                 <input type="text" class="edit-desc" value="${currentDesc}">
@@ -296,13 +280,18 @@ document.addEventListener('DOMContentLoaded', () => {
             editButton.title = 'Salvar';
             editButton.classList.replace('edit-btn', 'save-btn');
         }
-
-        // Salvar a Edição
         else if (target.closest('.save-btn')) {
             const newTitle = taskItem.querySelector('.edit-title').value;
             const newDesc = taskItem.querySelector('.edit-desc').value;
             
             try {
+                // ATENÇÃO: A lógica de salvar também precisa ser atualizada no futuro
+                // para preservar a data e a prioridade, assim como fizemos com o botão de concluir.
+                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const taskData = await response.json();
+    
                 await fetch(`${API_URL}/tarefas/${taskId}`, {
                     method: 'PUT',
                     headers: {
@@ -310,9 +299,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
+                        ...taskData,
                         titulo: newTitle,
                         descricao: newDesc,
-                        concluida: isCompleted
                     })
                 });
                 await fetchTasks();
