@@ -26,10 +26,10 @@
     --priority-yellow: #f59e0b;
     --priority-green: #22c55e;
 
-    /* Cores de fundo para prioridades */
-    --priority-red-bg: rgba(239, 68, 68, 0.05);
-    --priority-yellow-bg: rgba(245, 158, 11, 0.05);
-    --priority-green-bg: rgba(34, 197, 94, 0.05);
+    /* --- CORES ATUALIZADAS (MAIS VIVAS) PARA O MODO CLARO --- */
+    --priority-red-bg: #fecaca;    /* Vermelho mais visível */
+    --priority-yellow-bg: #fde68a; /* Amarelo mais visível */
+    --priority-green-bg: #bbf7d0;  /* Verde mais visível */
 }
 
 /* ===== Tema Escuro (Ativado com a classe .dark-mode no body) ===== */
@@ -59,17 +59,12 @@ body.dark-mode {
     --priority-yellow: #fbbf24;
     --priority-green: #4ade80;
 
-    /* Cores de fundo para prioridades no modo escuro */
-    --priority-red-bg: #fee2e2;    /* Um rosa bem claro */
-    --priority-yellow-bg: #fef3c7; /* Um amarelo bem claro */
-    --priority-green-bg: #dcfce7;  /* Um verde bem claro */
+    /* --- CORES RESTAURADAS (SEMI-TRANSPARENTES) PARA O MODO ESCURO --- */
+    --priority-red-bg: rgba(248, 113, 113, 0.1);
+    --priority-yellow-bg: rgba(251, 191, 36, 0.1);
+    --priority-green-bg: rgba(74, 222, 128, 0.1);
+    
     background-image: none;
-
-}
-
-body.dark-mode input[type="date"],
-body.dark-mode select {
-    color-scheme: dark;
 }
 
 
