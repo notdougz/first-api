@@ -361,8 +361,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Não foi possível carregar as tarefas.');
             }
 
-            const tasks = await response.json();
-            displayTasks(tasks);
+            allTasks = await response.json(); // Salva a lista original na variável global
+            renderTasks(); // Chama a nova função de renderização
 
         } catch (error) {
             authMessage.textContent = error.message;
@@ -373,49 +373,53 @@ document.addEventListener('DOMContentLoaded', () => {
      * Exibe as tarefas na tela, criando os elementos HTML para cada uma.
      * @param {Array} tasks - Uma lista de objetos de tarefa vindos da API.
      */
-    function displayTasks(tasks) {
+    function renderTasks() {
+        let tasksToRender = [...allTasks];
+
+        // 1. APLICA O FILTRO ATUAL
+        if (currentFilter === 'pending') {
+            tasksToRender = tasksToRender.filter(task => !task.concluida);
+        } else if (currentFilter === 'completed') {
+            tasksToRender = tasksToRender.filter(task => task.concluida);
+        }
+
+        // 2. APLICA A ORDENAÇÃO ATUAL
+        if (currentSort === 'priority') {
+            const priorityOrder = { 'vermelha': 1, 'amarela': 2, 'verde': 3 };
+            tasksToRender.sort((a, b) => {
+                const priorityA = priorityOrder[a.prioridade] || 99;
+                const priorityB = priorityOrder[b.prioridade] || 99;
+                if (priorityA !== priorityB) {
+                    return priorityA - priorityB;
+                }
+                // Critério de desempate: data
+                const dateA = a.data_vencimento ? new Date(a.data_vencimento) : null;
+                const dateB = b.data_vencimento ? new Date(b.data_vencimento) : null;
+                if (!dateA) return 1;
+                if (!dateB) return -1;
+                return dateA - dateB;
+            });
+        } else if (currentSort === 'dueDate') {
+            tasksToRender.sort((a, b) => {
+                const dateA = a.data_vencimento ? new Date(a.data_vencimento) : null;
+                const dateB = b.data_vencimento ? new Date(b.data_vencimento) : null;
+                if (!dateA) return 1; // Tarefas sem data vão para o final
+                if (!dateB) return -1;
+                return dateA - dateB;
+            });
+        }
+
+        // 3. RENDERIZA O RESULTADO NA TELA
         taskList.innerHTML = '';
-        
-        if (tasks.length === 0) {
-            taskList.innerHTML = '<li class="task-item">Nenhuma tarefa encontrada. Adicione uma!</li>';
+        if (tasksToRender.length === 0) {
+            taskList.innerHTML = '<li class="task-item" style="justify-content: center;">Nenhuma tarefa encontrada para este filtro.</li>';
             return;
         }
 
-        const priorityOrder = {
-            'vermelha': 1,
-            'amarela': 2,
-            'verde': 3
-        };
-
-        tasks.sort((a, b) => {
-            const priorityA = priorityOrder[a.prioridade] || 99;
-            const priorityB = priorityOrder[b.prioridade] || 99;
-            
-            // Se a prioridade for diferente, ordena por ela
-            if (priorityA !== priorityB) {
-                return priorityA - priorityB;
-            }
-
-            // Se a prioridade for igual, ordena pela data de vencimento (a mais próxima primeiro)
-            const dateA = a.data_vencimento ? new Date(a.data_vencimento) : null;
-            const dateB = b.data_vencimento ? new Date(b.data_vencimento) : null;
-
-            if (dateA && dateB) {
-                return dateA - dateB;
-            }
-            // Coloca tarefas com data antes daquelas sem data
-            if (dateA) return -1;
-            if (dateB) return 1;
-
-            return 0; // Mantém a ordem se tudo for igual
-        });
-
-        tasks.forEach(task => {
+        tasksToRender.forEach(task => {
             const li = document.createElement('li');
             li.className = 'task-item';
-            
             li.classList.add(`priority-${task.prioridade}`);
-
             if (task.concluida) {
                 li.classList.add('completed');
             }
@@ -423,7 +427,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let dueDate = '';
             if (task.data_vencimento) {
-                // new Date() precisa de um ajuste de fuso horário, então adicionamos 'T00:00:00'
                 const date = new Date(task.data_vencimento + 'T00:00:00');
                 dueDate = `<span class="due-date"><i class="fas fa-calendar-alt"></i> ${date.toLocaleDateString('pt-BR')}</span>`;
             }
