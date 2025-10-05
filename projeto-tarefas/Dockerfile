@@ -9,5 +9,4 @@ COPY . .
 
 EXPOSE 8000
 
-# IMPORTANTE: Use shell form para expandir $PORT
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,5 +1,19 @@
-/* ===== Tema Claro (Padrão) ===== */
-:root {
+/* ==========================================================================
+   Tabela de Conteúdos
+   ==========================================================================
+   1. Definições de Tema (Variáveis CSS)
+   2. Estilos Globais e Reset
+   3. Estrutura e Layout Principal
+   4. Componentes (Formulários, Botões, Cards, etc.)
+   5. Classes Utilitárias
+   6. Media Queries (Responsividade)
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Definições de Tema (Variáveis CSS)
+   ========================================================================== */
+   :root {
+    /* Cores de Ação */
     --primary-color: #4f46e5;
     --primary-hover: #4338ca;
     --danger-color: #dc2626;
@@ -8,107 +22,71 @@
     --warning-hover: #d97706;
     --success-color: #16a34a;
     --success-hover: #15803d;
-
+    /* Cores de Fundo */
     --background-primary: #e5e7eb;
     --background-secondary: #ffffff;
     --background-item: #f9fafb;
     --border-color: #d1d5db;
-
+    /* Cores de Texto */
     --text-primary: #1f2937;
     --text-secondary: #4b5563;
     --white: #ffffff;
-    --font-family: 'Poppins', sans-serif;
-
-    --shadow-color: rgba(0, 0, 0, 0.1);
-
-    /* Cores da borda de prioridade */
+    /* Cores de Prioridade */
     --priority-red: #ef4444;
     --priority-yellow: #f59e0b;
     --priority-green: #22c55e;
-
-    /* --- CORES ATUALIZADAS (MAIS VIVAS) PARA O MODO CLARO --- */
-    --priority-red-bg: #fecaca;    /* Vermelho mais visível */
-    --priority-yellow-bg: #fde68a; /* Amarelo mais visível */
-    --priority-green-bg: #bbf7d0;  /* Verde mais visível */
+    --priority-red-bg: #fecaca;
+    --priority-yellow-bg: #fde68a;
+    --priority-green-bg: #bbf7d0;
+    /* Outros */
+    --font-family: 'Poppins', sans-serif;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
-/* ===== Tema Escuro (Ativado com a classe .dark-mode no body) ===== */
 body.dark-mode {
     --primary-color: #6d28d9;
     --primary-hover: #5b21b6;
     --danger-color: #be123c;
     --danger-hover: #9f1239;
-    --warning-color: #d97706;
-    --warning-hover: #b45309;
-    --success-color: #16a34a;
-    --success-hover: #15803d;
-
     --background-primary: #111827;
     --background-secondary: #1f2937;
     --background-item: #374151;
     --border-color: #4b5563;
-
     --text-primary: #f9fafb;
     --text-secondary: #9ca3af;
-    --white: #ffffff;
-    
-    --shadow-color: rgba(0, 0, 0, 0.2);
-
-    /* Cores da borda de prioridade no modo escuro */
     --priority-red: #f87171;
     --priority-yellow: #fbbf24;
     --priority-green: #4ade80;
-
-    /* --- CORES RESTAURADAS (SEMI-TRANSPARENTES) PARA O MODO ESCURO --- */
     --priority-red-bg: rgba(248, 113, 113, 0.1);
     --priority-yellow-bg: rgba(251, 191, 36, 0.1);
     --priority-green-bg: rgba(74, 222, 128, 0.1);
-    
-    background-image: none;
+    --shadow-color: rgba(0, 0, 0, 0.2);
 }
 
-
-/* ===== Estilos Globais ===== */
+/* ==========================================================================
+   2. Estilos Globais e Reset
+   ========================================================================== */
 * {
     box-sizing: border-box;
+    margin: 0;
 }
 
 body {
     font-family: var(--font-family);
     background-color: var(--background-primary);
     color: var(--text-primary);
-    margin: 0;
     padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    
     transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body:not(.dark-mode) {
     background-image: linear-gradient(to top, #79a0eb 0%, #ffffff 100%);
     background-attachment: fixed;
 }
 
-/* ===== Container Principal ===== */
-#auth-container, #app-container {
-    background: var(--background-secondary);
-    padding: 2.5em;
-    border-radius: 16px;
-    box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
-    border: 1px solid var(--border-color);
-    width: 100%;
-    max-width: 600px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.hidden {
-    display: none;
-}
-
-/* ===== Títulos e Links ===== */
 h1, h2 {
     color: var(--text-primary);
-    margin-top: 0;
 }
 
 a {
@@ -121,40 +99,96 @@ a:hover {
     color: var(--primary-hover);
 }
 
-/* ===== Formulários e Inputs ===== */
+/* ==========================================================================
+   3. Estrutura e Layout Principal
+   ========================================================================== */
+/* Restaura o Flexbox no body para centralizar o container inicial */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#auth-container {
+    width: 100%;
+    max-width: 450px;
+    background: var(--background-secondary);
+    padding: 2.5em;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px var(--shadow-color);
+    border: 1px solid var(--border-color);
+}
+
+#tasks-page-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 2em;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+#form-card {
+    flex: 0 0 400px;
+    background: var(--background-secondary);
+    padding: 2.5em;
+    border-radius: 16px;
+    box-shadow: 0 10px 15px -3px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 2em;
+}
+
+.task-area {
+    flex-grow: 1;
+}
+
+/* ==========================================================================
+   4. Componentes
+   ========================================================================== */
+
+/* --- Formulários --- */
 form {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: 1.2em;
 }
 
-.form-row {
+.form-header {
+    text-align: center;
+    margin-bottom: 1em;
+}
+.form-header i {
+    font-size: 4rem;
+    color: var(--primary-color);
+    opacity: 0.8;
+}
+
+#form-card header {
     display: flex;
-    gap: 1em;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1em;
+    margin-bottom: 1.5em;
 }
 
-/* SELETOR UNIFICADO para todos os campos de formulário */
-input[type="email"], 
-input[type="password"], 
+input[type="email"],
+input[type="password"],
 input[type="text"],
 input[type="date"],
 select {
-    flex-grow: 1;
+    width: 100%;
     padding: 12px 15px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 1em;
     font-family: var(--font-family);
-    background-color: var(--background-primary);
+    background-color: var(--background-item);
     color: var(--text-primary);
-    min-width: 0; 
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+    transition: all 0.2s ease;
 }
-
-input::placeholder {
-    color: var(--text-secondary);
-}
-
+input::placeholder { color: var(--text-secondary); }
 input:focus,
 select:focus {
     outline: none;
@@ -162,7 +196,10 @@ select:focus {
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 30%, transparent);
 }
 
-/* ===== Botões ===== */
+.form-row { display: flex; gap: 1em; }
+p { margin-top: 1em; text-align: center; font-size: 0.9em; }
+
+/* --- Botões --- */
 button {
     display: inline-flex;
     align-items: center;
@@ -177,73 +214,63 @@ button {
     font-family: var(--font-family);
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
-button:hover {
-    transform: translateY(-2px);
-}
-button:active {
-    transform: translateY(0);
-}
+button:hover { transform: translateY(-2px); }
+button:active { transform: translateY(0); }
 
+/* Botão principal do formulário */
 form button[type="submit"] {
     background-color: var(--primary-color);
     color: var(--white);
 }
-form button[type="submit"]:hover {
-    background-color: var(--primary-hover);
-}
+form button[type="submit"]:hover { background-color: var(--primary-hover); }
 
-.form-header {
-    text-align: center;
-    margin-bottom: 1em;
+/* Botão de Logout */
+#logout-button {
+    background-color: var(--danger-color);
+    color: var(--white);
+    padding: 8px 16px;
+    font-size: 0.9em;
 }
-
-.form-header i {
-    font-size: 4rem; /* Tamanho do ícone */
-    color: var(--primary-color);
-    opacity: 0.8;
-}
-
-/* ===== Cabeçalho do App e Lista de Tarefas ===== */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; 
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1em;
-    margin-bottom: 1.5em;
-}
-
-#logout-button { background-color: var(--danger-color); color: var(--white); }
 #logout-button:hover { background-color: var(--danger-hover); }
 
+/* Botão de Tema */
 #theme-toggle-button {
-    position: fixed; 
-    top: 20px;
-    right: 20px;
+    position: fixed; top: 20px; right: 20px;
     background-color: var(--background-item);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    width: 45px;  
-    height: 45px;
+    width: 45px; height: 45px;
     border-radius: 50%;
-    font-size: 1.1em;
-    z-index: 1000; 
-    padding: 0; 
+    z-index: 1000;
 }
 
-#theme-toggle-button:hover {
-    color: var(--text-primary);
+/* --- Barra de Ferramentas de Tarefas --- */
+.task-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5em;
+    padding-bottom: 1.5em;
+    border-bottom: 1px solid var(--border-color);
+}
+.filter-buttons { display: flex; gap: 0.5em; }
+.filter-btn {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+}
+.filter-btn:hover { background-color: var(--background-item); }
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: var(--white);
     border-color: var(--primary-color);
-    background-color: var(--background-secondary);
 }
+.sort-options { display: flex; align-items: center; gap: 0.8em; }
+.sort-options label { font-size: 0.9em; color: var(--text-secondary); }
 
-#task-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 2em;
-}
-
-/* ===== Itens da Tarefa ===== */
+/* --- Itens de Tarefa --- */
+#task-list { list-style: none; padding: 0; }
 .task-item {
     display: flex;
     align-items: center;
@@ -253,222 +280,118 @@ header {
     margin-bottom: 1em;
     border: 1px solid var(--border-color);
     border-left-width: 5px;
-    transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.3s ease;
+    transition: all 0.2s ease;
 }
-
-.task-item.priority-verde { 
-    border-left-color: var(--priority-green);
-    background-color: var(--priority-green-bg);
-}
-.task-item.priority-amarela { 
-    border-left-color: var(--priority-yellow);
-    background-color: var(--priority-yellow-bg);
-}
-.task-item.priority-vermelha { 
-    border-left-color: var(--priority-red);
-    background-color: var(--priority-red-bg);
-}
-
 .task-item:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
+    box-shadow: 0 4px 6px -1px var(--shadow-color);
+}
+
+.task-details {
+    word-break: break-word;
+    margin-right: 1em;
 }
 
 .task-info {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
-    flex-grow: 1;
+    min-width: 0; 
 }
 
-.task-details { flex-grow: 1; }
-.task-details strong { font-size: 1.1em; font-weight: 500; color: var(--text-primary); }
-.task-details p { margin: 0.2em 0 0; color: var(--text-secondary); font-size: 0.9em; }
+/* Modificadores de Prioridade (corretos) */
+.task-item.priority-verde { border-left-color: var(--priority-green); background-color: var(--priority-green-bg); }
+.task-item.priority-amarela { border-left-color: var(--priority-yellow); background-color: var(--priority-yellow-bg); }
+.task-item.priority-vermelha { border-left-color: var(--priority-red); background-color: var(--priority-red-bg); }
 
-.due-date {
-    font-size: 0.85em;
+.task-info { flex-grow: 1;
+    display: flex; 
+    flex-direction: 
+    column; gap: 0.5em;
+}
+.task-details 
+strong { font-size: 1.1em; 
+    font-weight: 500; 
+}
+.task-details p { margin: 0.2em 0 0; 
+    color: var(--text-secondary); 
+    font-size: 0.9em; 
+    text-align: left; 
+    overflow-wrap: break-word;
+}
+.due-date { font-size: 0.85em; 
     color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-}
-
-.task-item.completed .task-details { text-decoration: line-through; }
-.task-item.completed .task-details strong { color: var(--text-secondary); }
-
-/* Botões de Ação da Tarefa */
-.task-actions { 
     display: flex; 
     align-items: center; 
-    gap: 0.7em; 
-    flex-shrink: 0; 
+    gap: 0.4em; 
 }
 
-.complete-btn, .delete-btn, .edit-btn, .save-btn, .uncomplete-btn { padding: 8px 12px; font-size: 0.85em; color: var(--white); }
-.complete-btn { background-color: var(--success-color); }
-.complete-btn:hover { background-color: var(--success-hover); }
-.delete-btn { background-color: var(--danger-color); }
-.delete-btn:hover { background-color: var(--danger-hover); }
-.edit-btn { background-color: var(--warning-color); }
-.edit-btn:hover { background-color: var(--warning-hover); }
-.save-btn { background-color: var(--primary-color); }
-.save-btn:hover { background-color: var(--primary-hover); }
-
-.uncomplete-btn {
-    background-color: var(--text-secondary); /* Um cinza neutro */
-}
-.uncomplete-btn:hover {
-    background-color: var(--text-primary);
+.task-item.completed .task-details { 
+    text-decoration: line-through;
+    color: var(--text-secondary); 
 }
 
-/* ===== Mensagens de Feedback ===== */
+.task-actions .task-action-btn {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    color: var(--white);
+    border: none;
+}
+
+/* Estilização baseada nos atributos data-action */
+.task-action-btn[data-action="complete"] { background-color: var(--success-color); }
+.task-action-btn[data-action="complete"]:hover { background-color: var(--success-hover); }
+
+.task-action-btn[data-action="uncomplete"] { background-color: var(--text-secondary); }
+.task-action-btn[data-action="uncomplete"]:hover { background-color: var(--text-primary); }
+
+.task-action-btn[data-action="edit"] { background-color: var(--warning-color); }
+.task-action-btn[data-action="edit"]:hover { background-color: var(--warning-hover); }
+
+.task-action-btn[data-action="delete"] { background-color: var(--danger-color); }
+.task-action-btn[data-action="delete"]:hover { background-color: var(--danger-hover); }
+
+/* ==========================================================================
+   5. Classes Utilitárias
+   ========================================================================== */
+.hidden { display: none !important; }
 .message { margin-top: 1em; text-align: center; font-weight: 500; }
-#auth-message { color: var(--danger-color); }
 
-/* Container geral que alinha o card e a lista de tarefas */
-#tasks-page-container {
-    align-items: flex-start; 
-    gap: 2em;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto; 
-    padding: 2em;
-}
-
-#tasks-page-container:not(.hidden) {
-    display: flex;
-}
-
-
-#form-card {
-    flex: 0 0 400px; /* Largura fixa de 400px */
-    background: var(--background-secondary);
-    padding: 2.5em;
-    border-radius: 16px;
-    box-shadow: 0 10px 15px -3px var(--shadow-color), 0 4px 6px -2px var(--shadow-color);
-    border: 1px solid var(--border-color);
-    position: sticky; 
-    top: 2em; 
-}
-
-/* Ajustes no título "Adicionar Tarefa" dentro do novo card */
-.sidebar h2 {
-    margin-top: 0;
-    margin-bottom: 1em;
-    font-size: 1.5rem;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid var(--border-color);
-}
-
-/* A área de tarefas da direita */
-.task-area {
-    flex-grow: 1; 
-}
-
-/* Responsividade para telas menores */
+/* ==========================================================================
+   6. Media Queries (Responsividade)
+   ========================================================================== */
 @media (max-width: 992px) {
-    /* Layout principal da página em telemóveis */
     #tasks-page-container {
-        flex-direction: column; 
+        flex-direction: column;
         align-items: stretch;
         padding: 1em;
     }
-
     #form-card {
-        flex: 1;
         width: 100%;
-        position: static; 
+        position: static;
     }
-
-    /* --- LÓGICA DO ACORDEÃO PARA O FORMULÁRIO --- */
     .sidebar h2 {
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-
     .sidebar h2::after {
-        content: '\f078'; /* Ícone de seta para baixo */
+        content: '\f078';
         font-family: 'Font Awesome 5 Free';
         font-weight: 900;
         transition: transform 0.3s ease;
     }
-
-    .sidebar:not(.collapsed) h2::after {
-        transform: rotate(180deg); /* Gira a seta para cima */
-    }
-
     .sidebar.collapsed > form > *:not(h2) {
-        display: none; /* Esconde o conteúdo do formulário */
+        display: none;
     }
-    
-    /* --- AJUSTE DE FONTE PARA OS INPUTS --- */
-    .form-row input[type="date"],
-    .form-row select {
-        font-size: 0.85em;
+    .sidebar:not(.collapsed) h2::after {
+        transform: rotate(180deg);
     }
-
-    /* --- AJUSTE DA BARRA DE FILTROS --- */
     .task-toolbar {
-        flex-direction: column; /* Coloca os filtros em cima da ordenação */
-        align-items: stretch; /* Faz os itens ocuparem a largura total */
+        flex-direction: column;
+        align-items: stretch;
         gap: 1em;
     }
-    
-    .sort-options {
-        justify-content: space-between; /* Alinha "Ordenar por:" à esquerda e o seletor à direita */
-    }
-}
-
-.sort-options {
-    justify-content: space-between; /* Alinha o texto e o seletor */
-}
-
-.task-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5em;
-    padding-bottom: 1.5em;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.filter-buttons {
-    display: flex;
-    gap: 0.5em;
-}
-
-.filter-btn {
-    background-color: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-    padding: 8px 16px;
-}
-
-.filter-btn:hover {
-    background-color: var(--background-item);
-    color: var(--text-primary);
-}
-
-.filter-btn.active {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border-color: var(--primary-color);
-}
-
-.sort-options {
-    display: flex;
-    align-items: center;
-    gap: 0.8em;
-}
-
-.sort-options label {
-    font-size: 0.9em;
-    color: var(--text-secondary);
-}
-
-.sort-options select {
-    padding: 8px 12px;
-    max-width: 200px;
 }

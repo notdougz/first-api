@@ -128,14 +128,14 @@ main() {
     start_services
     
     if health_check; then
-        success "🎉 Deploy realizado com sucesso!"
+        success " Deploy realizado com sucesso!"
         show_status
         log "Aplicação disponível em:"
         log "  - Frontend: http://localhost:8080"
         log "  - API: http://localhost:8000"
         log "  - Docs: http://localhost:8000/docs"
     else
-        error "❌ Deploy falhou!"
+        error " Deploy falhou!"
         show_logs
         exit 1
     fi
