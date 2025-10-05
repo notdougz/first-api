@@ -217,11 +217,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = e.target;
         const taskItem = target.closest('.task-item');
         if (!taskItem) return;
-
+    
         const taskId = taskItem.dataset.id;
         const token = localStorage.getItem('accessToken');
-        const isCompleted = taskItem.classList.contains('completed');
-
+    
+        // --- LÓGICA CORRIGIDA PARA COMPLETAR E DESFAZER TAREFAS ---
+        if (target.closest('.complete-btn, .uncomplete-btn')) {
+            // Define se a tarefa será marcada como concluída (true) ou pendente (false)
+            const newCompletedStatus = target.closest('.complete-btn') ? true : false;
+    
+            try {
+                // 1. Primeiro, busca os dados completos e atuais da tarefa na API.
+                const response = await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Não foi possível buscar os dados da tarefa para atualizar.');
+                
+                const taskData = await response.json();
+    
+                // 2. Agora, envia o objeto COMPLETO de volta, alterando apenas a propriedade "concluida".
+                // Isso preserva a prioridade, data e todos os outros campos.
+                await fetch(`${API_URL}/tarefas/${taskId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        ...taskData, // Copia todos os dados existentes (titulo, prioridade, data, etc.)
+                        concluida: newCompletedStatus // E sobrescreve apenas o status de conclusão
+                    })
+                });
+    
+                await fetchTasks(); // Atualiza a lista na tela
+            } catch (error) { console.error(error.message); }
+        }
+        
         // Ação de Deletar
         if (target.closest('.delete-btn')) {
             try {
@@ -383,6 +414,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 dueDate = `<span class="due-date"><i class="fas fa-calendar-alt"></i> ${date.toLocaleDateString('pt-BR')}</span>`;
             }
 
+            const completeButton = task.concluida
+                ? `<button class="uncomplete-btn" title="Desfazer"><i class="fas fa-undo"></i></button>`
+                : `<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>`;
+
             li.innerHTML = `
                 <div class="task-info">
                     <div class="task-details">
@@ -392,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${dueDate}
                 </div>
                 <div class="task-actions">
-                    ${!task.concluida ? '<button class="complete-btn" title="Concluir"><i class="fas fa-check"></i></button>' : ''}
+                    ${completeButton}
                     <button class="edit-btn" title="Editar"><i class="fas fa-pencil-alt"></i></button>
                     <button class="delete-btn" title="Deletar"><i class="fas fa-trash"></i></button>
                 </div>

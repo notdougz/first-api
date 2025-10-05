@@ -307,7 +307,7 @@ header {
     flex-shrink: 0; 
 }
 
-.complete-btn, .delete-btn, .edit-btn, .save-btn { padding: 8px 12px; font-size: 0.85em; color: var(--white); }
+.complete-btn, .delete-btn, .edit-btn, .save-btn, .uncomplete-btn { padding: 8px 12px; font-size: 0.85em; color: var(--white); }
 .complete-btn { background-color: var(--success-color); }
 .complete-btn:hover { background-color: var(--success-hover); }
 .delete-btn { background-color: var(--danger-color); }
@@ -316,6 +316,13 @@ header {
 .edit-btn:hover { background-color: var(--warning-hover); }
 .save-btn { background-color: var(--primary-color); }
 .save-btn:hover { background-color: var(--primary-hover); }
+
+.uncomplete-btn {
+    background-color: var(--text-secondary); /* Um cinza neutro */
+}
+.uncomplete-btn:hover {
+    background-color: var(--text-primary);
+}
 
 /* ===== Mensagens de Feedback ===== */
 .message { margin-top: 1em; text-align: center; font-weight: 500; }
