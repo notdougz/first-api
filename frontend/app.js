@@ -328,22 +328,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Listener central para ações nas tarefas (delegação de eventos)
-        ui.taskList.addEventListener('click', (e) => {
+        ui.taskList.addEventListener('click', async (e) => {
             const actionBtn = e.target.closest('.task-action-btn');
-            if (actionBtn) {
-                const taskItem = actionBtn.closest('.task-item');
-                const taskId = taskItem.dataset.id;
-                const action = actionBtn.dataset.action;
-
-                // Aqui poderíamos usar um switch ou um objeto de ações
-                // para um código ainda mais limpo, mas if/else é claro o suficiente.
-                if (action === 'complete' || action === 'uncomplete') {
-                    // Lógica para completar/desfazer
-                } else if (action === 'delete') {
-                    // Lógica para deletar
-                } else if (action === 'edit') {
-                    // Lógica para editar
+            if (!actionBtn) return;
+        
+            const taskItem = actionBtn.closest('.task-item');
+            const taskId = taskItem.dataset.id;
+            const action = actionBtn.dataset.action;
+        
+            try {
+                // Usamos um switch para lidar com cada ação de forma organizada
+                switch (action) {
+                    case 'complete':
+                    case 'uncomplete': {
+                        const taskToUpdate = state.allTasks.find(t => t.id == taskId);
+                        if (!taskToUpdate) return; // Segurança extra
+                        
+                        const newStatus = (action === 'complete');
+                        await apiService.updateTask(taskId, { ...taskToUpdate, concluida: newStatus });
+                        await refreshTasks();
+                        break;
+                    }
+        
+                    case 'delete': {
+                        // Adicionamos uma confirmação para evitar cliques acidentais
+                        if (confirm('Tem a certeza de que deseja apagar esta tarefa?')) {
+                            await apiService.deleteTask(taskId);
+                            await refreshTasks();
+                        }
+                        break;
+                    }
+        
+                    case 'edit': {
+                        const taskDetails = taskItem.querySelector('.task-details');
+                        const currentTitle = taskDetails.querySelector('strong').textContent;
+                        const currentDesc = taskDetails.querySelector('p').textContent;
+        
+                        // Transforma o texto em campos de input
+                        taskDetails.innerHTML = `
+                            <input type="text" class="edit-title" value="${currentTitle}">
+                            <textarea class="edit-desc">${currentDesc}</textarea>
+                        `;
+                        
+                        // Transforma o botão "Editar" em "Salvar"
+                        actionBtn.dataset.action = 'save';
+                        actionBtn.innerHTML = '<i class="fas fa-save"></i>';
+                        actionBtn.title = 'Salvar';
+                        break;
+                    }
+        
+                    case 'save': {
+                        const newTitle = taskItem.querySelector('.edit-title').value;
+                        const newDesc = taskItem.querySelector('.edit-desc').value;
+                        
+                        const taskToUpdate = state.allTasks.find(t => t.id == taskId);
+                        if (!taskToUpdate) return;
+        
+                        await apiService.updateTask(taskId, { ...taskToUpdate, titulo: newTitle, descricao: newDesc });
+                        await refreshTasks();
+                        break;
+                    }
                 }
+            } catch (error) {
+                showFeedbackMessage(error.message, 'error', 'app');
             }
         });
     }
