@@ -367,10 +367,11 @@ header {
 
 /* Responsividade para telas menores */
 @media (max-width: 992px) {
+    /* Layout principal da página em telemóveis */
     #tasks-page-container {
         flex-direction: column; 
         align-items: stretch;
-        padding: 1.5em;
+        padding: 1em;
     }
 
     #form-card {
@@ -379,9 +380,44 @@ header {
         position: static; 
     }
 
+    /* --- LÓGICA DO ACORDEÃO PARA O FORMULÁRIO --- */
+    .sidebar h2 {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .sidebar h2::after {
+        content: '\f078'; /* Ícone de seta para baixo */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar:not(.collapsed) h2::after {
+        transform: rotate(180deg); /* Gira a seta para cima */
+    }
+
+    .sidebar.collapsed > form > *:not(h2) {
+        display: none; /* Esconde o conteúdo do formulário */
+    }
+    
+    /* --- AJUSTE DE FONTE PARA OS INPUTS --- */
     .form-row input[type="date"],
     .form-row select {
-        font-size: 0.8em; /* Reduz o tamanho da fonte */
+        font-size: 0.85em;
+    }
+
+    /* --- AJUSTE DA BARRA DE FILTROS --- */
+    .task-toolbar {
+        flex-direction: column; /* Coloca os filtros em cima da ordenação */
+        align-items: stretch; /* Faz os itens ocuparem a largura total */
+        gap: 1em;
+    }
+    
+    .sort-options {
+        justify-content: space-between; /* Alinha "Ordenar por:" à esquerda e o seletor à direita */
     }
 }
 
