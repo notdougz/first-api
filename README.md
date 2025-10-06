@@ -1,29 +1,27 @@
-# 📋 Gerenciador de Tarefas – Full‑Stack (FastAPI + JS)
+
+# 📋 Gerenciador de Tarefas – Full Stack
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Latest-green?style=flat-square&logo=fastapi)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?style=flat-square&logo=docker)
 ![Railway](https://img.shields.io/badge/Deploy-Railway-purple?style=flat-square)
 
-Aplicação full‑stack de gerenciamento de tarefas com autenticação JWT, focada em boas práticas e deploy em produção.
 
-### 🔥 Demonstração (Produção)
+Uma aplicação completa para gerenciar suas tarefas diárias, com cadastro de usuários, login seguro e organização de atividades. Feita com FastAPI no backend e HTML/CSS/JavaScript no frontend.
 
-- 🌐 App em produção: [`app-production-8a2c.up.railway.app`](https://app-production-8a2c.up.railway.app/)
+## 🌐 Veja o projeto funcionando
 
-> Frontend estático (Nginx) consumindo API FastAPI com CORS liberado para o domínio de produção.
-
-#### 👀 Prévia visual
+Acesse a aplicação no ar: **[https://app-production-8a2c.up.railway.app/](https://app-production-8a2c.up.railway.app/)**
 
 ![Tela de Login](assets/login.png)
 
 ![Minhas Tarefas](assets/tarefas.png)
 
-## 🎯 Visão Geral
+## 🎯 O que esse projeto faz?
 
-Projeto construído para consolidar conhecimentos de backend, frontend e DevOps. Traz uma base sólida e organizada, ideal para evolução (novas features, migração de banco, CI/CD etc.).
+Este é um gerenciador de tarefas onde você pode criar uma conta, fazer login e gerenciar suas atividades do dia a dia. Cada usuário tem suas próprias tarefas e ninguém mais pode ver ou modificar elas.
 
-### 🚀 Destaques Técnicos
+### 🚀 Funcionalidades principais
 
 - **Backend**: FastAPI, autenticação JWT, ORM SQLAlchemy (async)
 - **Frontend**: HTML/CSS/JS (vanilla) responsivo, UX simples e direto
@@ -31,133 +29,149 @@ Projeto construído para consolidar conhecimentos de backend, frontend e DevOps.
 - **Qualidade**: testes com Pytest, tipagem Pydantic, validações
 - **DevOps**: Docker, Docker Compose e deploy em Railway
 
-## 🛠️ Funcionalidades
 
-- ✅ Registro e login de usuários
-- ✅ Criar, listar, editar e excluir tarefas do usuário autenticado
-- ✅ Tema claro/escuro e feedback visual
-- ✅ Documentação automática da API (Swagger)
+## 🛠️ Tecnologias utilizadas
 
-## ⚡ Como Rodar
+**Backend:** FastAPI (Python), SQLAlchemy, JWT para autenticação
 
-### Opção 1: Docker Compose (Recomendado)
+**Frontend:** HTML5, CSS3, JavaScript vanilla
+
+**Banco de dados:** SQLite (desenvolvimento) e PostgreSQL (produção)
+
+**Infraestrutura:** Docker, Docker Compose, Railway
+
+## ⚡ Como rodar o projeto na sua máquina
+
+### Pré-requisitos
+
+Você precisa ter instalado:
+
+- Docker e Docker Compose
+- Git
+
+
+### Passo a passo
+
+**1. Clone o repositório**
 
 ```bash
-# Clone o projeto
 git clone https://github.com/notdougz/first-api.git
 cd first-api
-
-# Sobe API e Frontend
-docker-compose up --build
 ```
 
-Acesse:
+**2. Configure as variáveis de ambiente**
 
-- 🌐 Frontend: http://localhost:8080
-- 🔧 API: http://localhost:8000
-- 📚 Docs: http://localhost:8000/docs
-
-### Opção 2: Execução Local (Desenvolvimento)
-
-```bash
-cd projeto-tarefas
-
-# Instala dependências
-pip install -r requirements.txt
-
-# Executa API
-uvicorn main:app --reload
-```
-
-## 🔑 Variáveis de Ambiente
-
-Copie `env.example` para `.env` e ajuste conforme o ambiente.
-
-Mínimo para desenvolvimento (SQLite padrão):
+Crie um arquivo `.env` na raiz do projeto (copie o `.env.example` se existir) e adicione:
 
 ```
-SECRET_KEY="sua_chave_secreta_super_segura"
+SECRET_KEY=sua_chave_secreta_aqui
 ENVIRONMENT=development
 ```
 
-Produção (ex.: `docker-compose.prod.yml` usa PostgreSQL):
+**3. Suba a aplicação com Docker Compose**
 
-```
-POSTGRES_DB=tarefas_db
-POSTGRES_USER=tarefas_user
-POSTGRES_PASSWORD=tarefas_password
-SECRET_KEY=sua_chave_secreta_super_segura
-ENVIRONMENT=production
+```bash
+docker-compose up --build
 ```
 
-## 📦 Endpoints Principais
+Este comando vai construir as imagens e iniciar todos os serviços automaticamente.
 
-- `POST /usuarios/` – cria usuário
-- `POST /login` – retorna `access_token`
-- `GET /tarefas/` – lista tarefas do usuário
-- `POST /tarefas/` – cria tarefa
-- `GET /tarefas/{id}` – detalhe
-- `PUT /tarefas/{id}` – atualização
-- `DELETE /tarefas/{id}` – remoção
-- `GET /health` – verificação de saúde
+**4. Acesse a aplicação**
 
-Autenticação via Bearer Token (`Authorization: Bearer <token>`).
+Depois que tudo subir, você pode acessar:
 
-## 🧪 Testes
+- 🌐 **Frontend:** http://localhost:8080
+- 🔧 **API:** http://localhost:8000
+- 📚 **Documentação da API:** http://localhost:8000/docs
+
+
+## 🧪 Como rodar os testes automatizados
+
+Os testes garantem que o código está funcionando corretamente. Para rodar os testes do projeto:
+
+**1. Entre na pasta do backend**
 
 ```bash
 cd projeto-tarefas
+```
+
+**2. Instale as dependências (se ainda não instalou)**
+
+```bash
+pip install -r requirements.txt
+```
+
+**3. Execute os testes com pytest**
+
+```bash
 pytest
 ```
 
-## 🏗️ Arquitetura
+O pytest vai procurar automaticamente por todos os arquivos de teste (que começam com `test_`) e executar eles, mostrando quais passaram e quais falharam.
+**Dica:** Para ver mais detalhes durante os testes, use:
+
+```bash
+pytest -v
+```
+
+
+## 📦 Principais endpoints da API
+
+Depois de rodar o projeto, você pode testar esses endpoints (use o Swagger em `/docs` para facilitar):
+
+- `POST /usuarios/` – Criar um novo usuário
+- `POST /login` – Fazer login e receber um token
+- `GET /tarefas/` – Ver todas as suas tarefas
+- `POST /tarefas/` – Criar uma nova tarefa
+- `PUT /tarefas/{id}` – Editar uma tarefa
+- `DELETE /tarefas/{id}` – Excluir uma tarefa
+- `GET /health` – Verificar se a API está funcionando
+
+
+## 🏗️ Estrutura do projeto
 
 ```
 first-api/
-├── docker-compose.yml           # Dev (API + Frontend)
-├── docker-compose.prod.yml      # Prod (API + Postgres + Frontend)
-├── projeto-tarefas/             # Backend (FastAPI)
-│   ├── main.py                  # Rotas e CORS
-│   ├── auth.py                  # JWT, hashing e dependências
-│   ├── crud.py                  # Operações de banco
-│   ├── models.py                # Modelos SQLAlchemy
-│   ├── schemas.py               # Pydantic
-│   └── tests/                   # Pytest
-└── frontend/                    # Frontend estático
+├── docker-compose.yml          # Configuração para rodar localmente
+├── docker-compose.prod.yml     # Configuração para produção
+├── projeto-tarefas/            # Código do backend (FastAPI)
+│   ├── main.py                 # Rotas principais da API
+│   ├── auth.py                 # Autenticação e segurança
+│   ├── crud.py                 # Operações com banco de dados
+│   ├── models.py               # Modelos de dados
+│   ├── schemas.py              # Validação de dados
+│   └── tests/                  # Testes automatizados
+└── frontend/                   # Código do frontend
     ├── index.html
     ├── app.js
     └── style.css
 ```
 
-## 🔒 CORS e Domínios
 
-O backend permite CORS para:
+## 🔒 Segurança
 
-- `https://app-production-8a2c.up.railway.app`
-- `http://localhost:8080`
+O projeto usa várias camadas de segurança:
 
-Isso garante que o frontend em produção e local acessem a API com segurança.
+- Senhas são criptografadas (não armazenamos senha em texto puro)
+- Autenticação com JWT (tokens temporários)
+- CORS configurado para permitir apenas domínios autorizados
+- Cada usuário só acessa suas próprias tarefas
 
-## 🚀 Deploy
+***
 
-- Infra de produção hospedada na Railway.
-- Compose de produção inclui Postgres, API e Frontend Nginx.
-- Healthcheck em `GET /health` para orquestração e observabilidade.
+## 💡 Observações importantes
 
-## 💻 Stack Tecnológica
+- O ambiente de desenvolvimento usa SQLite (banco leve em arquivo)
+- O ambiente de produção usa PostgreSQL (banco robusto)
+- Para parar os containers Docker, use `Ctrl+C` e depois `docker-compose down`
+- Se precisar reconstruir as imagens, use `docker-compose up --build`
 
-**Backend**: FastAPI, SQLAlchemy (async), Pydantic, JWT, Passlib
-
-**Frontend**: HTML5, CSS3, JavaScript ES6+, Fetch API
-
-**DevOps**: Docker, Docker Compose, Railway
+***
 
 ## 👤 Autor
 
 **Douglas** – [@notdougz](https://github.com/notdougz)
 
-_Projeto desenvolvido como parte do meu aprendizado em desenvolvimento full‑stack._
+Este projeto faz parte do meu portfólio como desenvolvedor. Se gostou, deixe uma ⭐ no repositório!
 
----
 
-Se este projeto foi útil, deixe uma ⭐ e compartilhe!
