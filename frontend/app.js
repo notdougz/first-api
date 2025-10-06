@@ -73,14 +73,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                
-                // --- ESTA É A LÓGICA CORRIGIDA E MAIS INTELIGENTE ---
-                let errorMessage = "Ocorreu um erro inesperado."; // Mensagem padrão
+                let errorMessage = "Ocorreu um erro inesperado."; 
+            
                 if (typeof errorData.detail === 'string') {
-                    errorMessage = errorData.detail; // Erros simples como "Email já registrado"
-                } else if (Array.isArray(errorData.detail)) {
-                    // Formata os erros de validação detalhados do FastAPI
-                    errorMessage = errorData.detail.map(err => `${err.loc.join(' -> ')}: ${err.msg}`).join('\n');
+                    errorMessage = errorData.detail;
+                } else if (Array.isArray(errorData.detail) && errorData.detail.length > 0) {
+                    const firstError = errorData.detail[0];
+                    errorMessage = firstError.msg;
+            
+                    if (errorMessage.includes('String should have at least 8 characters')) {
+                        errorMessage = 'A senha deve ter no mínimo 8 caracteres.';
+                    }
                 } else {
                     errorMessage = `Erro na requisição: ${response.statusText}`;
                 }
