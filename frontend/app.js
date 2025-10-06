@@ -59,22 +59,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 ...options.headers,
             };
-
+        
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
-
+        
             const response = await fetch(`${config.API_URL}${endpoint}`, { ...options, headers });
-
+        
             if (response.status === 401) {
-                handleLogout(); // Se a API retornar "Não Autorizado", faz logout
+                handleLogout();
                 throw new Error('Sessão expirada. Por favor, faça login novamente.');
             }
+        
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || `Erro na requisição: ${response.statusText}`);
+                
+                // --- ESTA É A LÓGICA CORRIGIDA E MAIS INTELIGENTE ---
+                let errorMessage = "Ocorreu um erro inesperado."; // Mensagem padrão
+                if (typeof errorData.detail === 'string') {
+                    errorMessage = errorData.detail; // Erros simples como "Email já registrado"
+                } else if (Array.isArray(errorData.detail)) {
+                    // Formata os erros de validação detalhados do FastAPI
+                    errorMessage = errorData.detail.map(err => `${err.loc.join(' -> ')}: ${err.msg}`).join('\n');
+                } else {
+                    errorMessage = `Erro na requisição: ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
             }
-            // Se a resposta não tiver corpo (ex: DELETE), retorna um sucesso genérico
+            
             return response.status === 204 ? { success: true } : response.json();
         },
 
